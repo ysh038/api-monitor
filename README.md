@@ -1,5 +1,8 @@
 # API Monitor
 
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.ysh038/api-monitor-spring-boot-starter)](https://central.sonatype.com/artifact/io.github.ysh038/api-monitor-spring-boot-starter)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
+
 Spring Boot 앱에 의존성 한 줄만 추가하면, 들어온 요청·응답·예외와 앱이 호출한 외부 API를 웹 대시보드에서 한 번에 볼 수 있게 해 주는 도구입니다. 연계 테스트 중에 "요청이 어떤 값으로 들어왔는지, 무엇을 응답했는지, 내부에서 어떤 예외가 났는지"를 로그 grep 없이 확인하는 용도입니다.
 
 ```
@@ -23,30 +26,69 @@ Spring Boot 앱 (+ starter)                          대시보드 (Node + SQLite
 
 ## 빠른 시작
 
-### 1. 대시보드 설치 (앱과 같은 서버, 한 번만)
+할 일은 두 가지입니다. **대시보드를 서버에 한 번 설치**하고, **앱에 의존성 한 줄을 추가**합니다.
+
+### 1. 대시보드 설치 (앱과 같은 서버, 최초 1회)
 
 ```bash
+git clone https://github.com/ysh038/api-monitor.git && cd api-monitor
 docker build -t api-monitor-server:1.0.0 server
-./deploy/install-dashboard.sh          # http://<서버IP>:8090
+./deploy/install-dashboard.sh
+# → 완료: http://<서버IP>:8090
 ```
 
-`install-dashboard.sh`는 같은 폴더에 `api-monitor-server-*.tar.gz`가 있으면 먼저 로드합니다. 폐쇄망 반입용입니다. 다시 실행해도 쌓인 로그는 유지됩니다.
+`install-dashboard.sh`가 하는 일은 세 가지입니다.
+1. 같은 폴더에 `api-monitor-server-*.tar.gz`가 있으면 `docker load`로 이미지를 올립니다(폐쇄망 반입용). 없으면 이미 올라와 있는 `api-monitor-server:1.0.0` 이미지를 씁니다.
+2. 기존 `api-monitor` 컨테이너가 있으면 교체하고, 새로 실행합니다(`--restart unless-stopped`, 포트 8090, 데이터 볼륨 `api-monitor-data`).
+3. `/api/health`로 기동을 확인하고 대시보드 주소를 출력합니다.
+
+설치하고 나면 계속 떠 있습니다.
+- 서버를 재부팅해도 자동으로 다시 뜹니다.
+- 앱을 재배포할 때마다 다시 설치할 필요가 없습니다.
+- 스크립트를 다시 실행해도(대시보드 업데이트 등) 쌓인 로그는 유지됩니다.
+
+| 상황 | 방법 |
+|---|---|
+| 포트 변경 | `./deploy/install-dashboard.sh 9000`. 앱에 `API_MONITOR_DISCOVERY_PORT=9000`이 필요합니다. |
+| compose로 띄우기 | `docker compose -f deploy/docker-compose.api-monitor.yml up -d` |
+| 중지 / 삭제 | `docker stop api-monitor` / `docker rm -f api-monitor && docker volume rm api-monitor-data` |
 
 ### 2. 앱에 의존성 추가
 
+Gradle:
 ```groovy
 dependencies {
     implementation 'io.github.ysh038:api-monitor-spring-boot-starter:1.0.0'
 }
 ```
 
+Maven:
+```xml
+<dependency>
+    <groupId>io.github.ysh038</groupId>
+    <artifactId>api-monitor-spring-boot-starter</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+코드, `application.yml`, `.env`, Dockerfile, compose 파일은 수정하지 않습니다.
+
 ### 3. 평소처럼 빌드·배포
 
-앱이 같은 서버의 대시보드를 **자동으로 찾아 연결합니다.** 설정은 필요 없습니다. 기동 로그에 아래 줄이 보이면 연결된 것입니다.
+앱이 같은 서버의 대시보드를 **자동으로 찾아 연결합니다.** 기동 로그에 아래 줄이 보이면 연결된 것입니다.
 
 ```
+[api-monitor] 활성화: service=<spring.application.name>, outbound=true
 [api-monitor] 대시보드 연결: http://172.18.0.1:8090/ingest
 ```
+
+대시보드 `http://<서버IP>:8090`을 열어 앱에 요청을 보내면 목록에 나타납니다(5초마다 자동 갱신). 외부에서 보려면 서버 방화벽에서 8090 포트를 열어야 합니다.
+
+연결 로그가 안 보이면 아래처럼 확인합니다.
+```bash
+docker exec <앱 컨테이너> wget -qO- http://host.docker.internal:8090/api/health   # 또는 curl
+```
+응답이 없으면 앱에 `API_MONITOR_ENDPOINT=http://<서버IP>:8090/ingest`를 지정합니다.
 
 ---
 
@@ -156,7 +198,7 @@ docker save api-monitor-server:1.0.0 | gzip > deploy/api-monitor-server-1.0.0.ta
 ./install-dashboard.sh
 ```
 
-앱은 개방망에서 스타터를 포함해 빌드한 이미지를 그대로 반입하면 됩니다.
+앱은 개방망에서 빌드합니다(스타터는 이때 Maven Central에서 받습니다). 빌드된 앱 이미지를 그대로 반입하면 되고, 폐쇄망 안에서는 스타터를 다시 받지 않습니다.
 
 ---
 
@@ -183,7 +225,7 @@ docker save api-monitor-server:1.0.0 | gzip > deploy/api-monitor-server-1.0.0.ta
 
 ```bash
 docker build -t api-monitor-server:1.0.0 server
-docker compose -f docker-compose.test.yml up -d --build    # 스타터를 Maven Central에서 받아 빌드
+docker compose -f docker-compose.test.yml up -d --build    # 샘플 앱은 스타터를 Maven Central에서 받아 빌드
 ```
 
 ## 스타터 빌드·배포
