@@ -1,5 +1,6 @@
 plugins {
     id 'java-library'
+    id 'signing'
     id 'com.vanniktech.maven.publish' version '0.37.0'
 }
 
@@ -41,12 +42,14 @@ dependencies {
 // Maven Central (Central Portal) 배포
 // 필요한 값 (~/.gradle/gradle.properties):
 //   mavenCentralUsername, mavenCentralPassword   ← Portal의 User Token
-//   signingInMemoryKey, signingInMemoryKeyId, signingInMemoryKeyPassword   ← GPG 키
+//   signing.gnupg.keyName, signing.gnupg.passphrase   ← 로컬 gpg 키 (gpg 명령으로 서명)
+//   (또는 signingInMemoryKey, signingInMemoryKeyId, signingInMemoryKeyPassword)
 // 배포: ./gradlew publishToMavenCentral   (Portal에서 Publish 눌러 최종 공개)
 mavenPublishing {
     publishToMavenCentral()
     // 서명 키가 설정된 경우에만 서명 (로컬 테스트용 publishToMavenLocal은 키 없이도 동작)
-    if (providers.gradleProperty('signingInMemoryKey').isPresent() || providers.gradleProperty('signing.keyId').isPresent()) {
+    if (providers.gradleProperty('signingInMemoryKey').isPresent() || providers.gradleProperty('signing.keyId').isPresent()
+            || providers.gradleProperty('signing.gnupg.keyName').isPresent()) {
         signAllPublications()
     }
     coordinates('io.github.ysh038', 'api-monitor-spring-boot-starter', version.toString())
@@ -75,5 +78,12 @@ mavenPublishing {
             connection = 'scm:git:git://github.com/ysh038/api-monitor.git'
             developerConnection = 'scm:git:ssh://git@github.com/ysh038/api-monitor.git'
         }
+    }
+}
+
+// 로컬 gpg 키로 서명 (signing.gnupg.keyName 이 있을 때)
+if (providers.gradleProperty('signing.gnupg.keyName').isPresent()) {
+    signing {
+        useGpgCmd()
     }
 }
