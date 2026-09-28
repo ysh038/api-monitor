@@ -1,0 +1,10 @@
+node_modules/
+server/data/
+.gradle/
+starter/build/
+*.tar
+*.log
+.DS_Store
+build/
+handoff/
+internal/

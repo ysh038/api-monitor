@@ -1,0 +1,21 @@
+# 모니터링 서버 배포용 (폐쇄망: build 없이 docker load 된 이미지를 그대로 실행)
+#
+# 방법 1 (권장): 이 서비스 블록을 Spring 앱의 docker-compose.yaml에 붙여 넣고
+#               같은 네트워크(예: app-network)에 연결 → 앱에서 http://api-monitor:8081/ingest 로 접근
+# 방법 2: 이 파일로 따로 띄우고, 앱에서는 http://host.docker.internal:8081/ingest 로 접근
+#         (리눅스는 앱 쪽 compose에 extra_hosts: ["host.docker.internal:host-gateway"] 필요)
+services:
+  api-monitor:
+    image: api-monitor-server:1.0.0
+    container_name: api-monitor
+    restart: unless-stopped
+    ports:
+      - "${API_MONITOR_PORT:-8081}:8081"
+    environment:
+      - RETENTION_DAYS=${API_MONITOR_RETENTION_DAYS:-30}
+      # - INGEST_API_KEY=바꿀값   # 설정하면 스타터 쪽 API_MONITOR_API_KEY도 같은 값 필요
+    volumes:
+      - api-monitor-data:/data   # named volume (컨테이너 사용자 node가 쓸 수 있도록)
+
+volumes:
+  api-monitor-data:

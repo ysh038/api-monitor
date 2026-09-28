@@ -1,0 +1,6 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: test-api
+# api-monitor.endpoint 는 환경변수 API_MONITOR_ENDPOINT 로 주입

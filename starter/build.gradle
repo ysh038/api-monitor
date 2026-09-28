@@ -1,0 +1,79 @@
+plugins {
+    id 'java-library'
+    id 'com.vanniktech.maven.publish' version '0.37.0'
+}
+
+group = 'io.github.ysh038'
+version = '1.0.0'
+
+java {
+    // Spring Boot 3.x/4.x 모두 Java 17 이상이므로 17 바이트코드로 빌드한다.
+    toolchain { languageVersion = JavaLanguageVersion.of(21) }
+}
+tasks.withType(JavaCompile).configureEach {
+    options.release = 17
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-parameters'
+}
+tasks.withType(Javadoc).configureEach {
+    options.encoding = 'UTF-8'
+    options.charSet = 'UTF-8'
+    options.addStringOption('Xdoclint:none', '-quiet')
+}
+
+repositories {
+    mavenCentral()
+}
+
+// 모든 의존성은 compileOnly: 앱이 이미 가진 Spring/Servlet/SLF4J를 그대로 쓰고,
+// 스타터가 앱에 새 라이브러리(버전 충돌 요소)를 끌고 들어가지 않는다.
+dependencies {
+    compileOnly platform('org.springframework.boot:spring-boot-dependencies:4.0.5')
+    annotationProcessor platform('org.springframework.boot:spring-boot-dependencies:4.0.5')
+
+    compileOnly 'org.springframework.boot:spring-boot-autoconfigure'
+    compileOnly 'org.springframework:spring-webmvc'
+    compileOnly 'jakarta.servlet:jakarta.servlet-api'
+    compileOnly 'org.slf4j:slf4j-api'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+}
+
+// Maven Central (Central Portal) 배포
+// 필요한 값 (~/.gradle/gradle.properties):
+//   mavenCentralUsername, mavenCentralPassword   ← Portal의 User Token
+//   signingInMemoryKey, signingInMemoryKeyId, signingInMemoryKeyPassword   ← GPG 키
+// 배포: ./gradlew publishToMavenCentral   (Portal에서 Publish 눌러 최종 공개)
+mavenPublishing {
+    publishToMavenCentral()
+    // 서명 키가 설정된 경우에만 서명 (로컬 테스트용 publishToMavenLocal은 키 없이도 동작)
+    if (providers.gradleProperty('signingInMemoryKey').isPresent() || providers.gradleProperty('signing.keyId').isPresent()) {
+        signAllPublications()
+    }
+    coordinates('io.github.ysh038', 'api-monitor-spring-boot-starter', version.toString())
+
+    pom {
+        name = 'API Monitor Spring Boot Starter'
+        description = 'Add one dependency to a Spring Boot app to capture inbound requests, responses, exceptions and outbound HTTP calls, and ship them to the API Monitor dashboard.'
+        inceptionYear = '2026'
+        url = 'https://github.com/ysh038/api-monitor'
+        licenses {
+            license {
+                name = 'The Apache License, Version 2.0'
+                url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+                distribution = 'repo'
+            }
+        }
+        developers {
+            developer {
+                id = 'ysh038'
+                name = 'ysh038'
+                url = 'https://github.com/ysh038'
+            }
+        }
+        scm {
+            url = 'https://github.com/ysh038/api-monitor'
+            connection = 'scm:git:git://github.com/ysh038/api-monitor.git'
+            developerConnection = 'scm:git:ssh://git@github.com/ysh038/api-monitor.git'
+        }
+    }
+}

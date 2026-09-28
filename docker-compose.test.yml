@@ -1,0 +1,30 @@
+# 검증용: 모니터링 서버 + Starter 적용 샘플 앱 + 가짜 Python AI 서버
+services:
+  api-monitor:
+    image: api-monitor-server:1.0.0
+    ports:
+      - "8081:8081"
+    environment:
+      - RETENTION_DAYS=30
+    volumes:
+      - apimon-data:/data
+
+  sample-app:
+    build: ./sample-app
+    image: sample-api:test
+    ports:
+      - "9999:9999"
+    environment:
+      # 스타터 설정은 이 한 줄이면 된다 (service-name은 spring.application.name 사용)
+      - API_MONITOR_ENDPOINT=http://api-monitor:8081/ingest
+      - AI_BASE_URL=http://ai-server:8000
+    depends_on:
+      - api-monitor
+      - ai-server
+
+  ai-server:
+    build: ./sample-ai-server
+    image: sample-ai-server:test
+
+volumes:
+  apimon-data:

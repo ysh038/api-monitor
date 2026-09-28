@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>API Monitor</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="dot"></span>API Monitor</div>
+  <div class="topbar-right">
+    <span id="lastUpdated" class="muted"></span>
+    <label class="switch"><input type="checkbox" id="autoRefresh" checked><span>자동 갱신 5초</span></label>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="side-title">서비스</div>
+    <ul id="serviceList" class="side-list"></ul>
+    <div class="side-title">외부 호출 대상</div>
+    <ul id="hostList" class="side-list"></ul>
+  </aside>
+
+  <main class="main">
+    <div class="filters">
+      <div class="seg" id="kindSeg">
+        <button data-kind="" class="on">전체</button>
+        <button data-kind="INBOUND">들어온 요청</button>
+        <button data-kind="OUTBOUND">외부 호출</button>
+      </div>
+      <div class="chips" id="statusChips">
+        <button data-status="2xx" class="chip s2">2xx</button>
+        <button data-status="4xx" class="chip s4">4xx</button>
+        <button data-status="5xx" class="chip s5">5xx</button>
+        <button data-status="none" class="chip sx" title="응답을 받지 못한 호출 (연결 실패·타임아웃)">응답 없음</button>
+      </div>
+      <label class="switch"><input type="checkbox" id="exceptionOnly"><span>예외만</span></label>
+      <input id="search" type="search" placeholder="경로·바디·예외·requestId 검색">
+    </div>
+
+    <div class="active-filter" id="activeFilter" hidden></div>
+
+    <div class="table-wrap">
+      <table class="logs">
+        <thead>
+          <tr><th class="c-status">상태</th><th class="c-svc">서비스</th><th class="c-method">메서드</th><th>경로</th><th class="c-dur">소요</th><th class="c-time">시각</th><th class="c-ex">예외</th></tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div id="empty" class="empty" hidden>아직 수신된 로그가 없습니다.</div>
+      <button id="loadMore" class="load-more" hidden>더 보기</button>
+    </div>
+  </main>
+</div>
+
+<div id="drawerBackdrop" class="backdrop" hidden></div>
+<section id="drawer" class="drawer" hidden aria-label="요청 상세">
+  <div class="drawer-head">
+    <div id="dTitle" class="d-title"></div>
+    <button id="dClose" class="icon-btn" aria-label="닫기">✕</button>
+  </div>
+  <div id="dBody" class="drawer-body"></div>
+</section>
+
+<script src="app.js"></script>
+</body>
+</html>

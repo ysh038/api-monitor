@@ -1,0 +1,6 @@
+{
+  "port": 8081,
+  "dbPath": "./data/monitor.db",
+  "retentionDays": 30,
+  "ingestApiKey": ""
+}
