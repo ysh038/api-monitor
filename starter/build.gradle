@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'io.github.ysh038'
-version = '1.0.0'
+version = '1.1.0'
 
 java {
     // Spring Boot 3.x/4.x 모두 Java 17 이상이므로 17 바이트코드로 빌드한다.
@@ -24,6 +24,13 @@ tasks.withType(Javadoc).configureEach {
 
 repositories {
     mavenCentral()
+}
+
+// 내장 대시보드 화면: 별도 대시보드 서버와 같은 파일(server/public)을 jar 에 넣는다
+tasks.named('processResources') {
+    from(rootProject.file('../server/public')) {
+        into 'META-INF/api-monitor/dashboard'
+    }
 }
 
 // 모든 의존성은 compileOnly: 앱이 이미 가진 Spring/Servlet/SLF4J를 그대로 쓰고,
@@ -56,7 +63,7 @@ mavenPublishing {
 
     pom {
         name = 'API Monitor Spring Boot Starter'
-        description = 'Add one dependency to a Spring Boot app to capture inbound requests, responses, exceptions and outbound HTTP calls, and ship them to the API Monitor dashboard.'
+        description = 'Add one dependency to a Spring Boot app to capture inbound requests, responses, exceptions and outbound HTTP calls, and browse them on a built-in dashboard at /_api-monitor.'
         inceptionYear = '2026'
         url = 'https://github.com/ysh038/api-monitor'
         licenses {

@@ -69,7 +69,7 @@
   let listToken = 0;
   async function reloadList() {
     const token = ++listToken;
-    const res = await fetch(`/api/logs?${queryString({ limit: PAGE })}`);
+    const res = await fetch(`api/logs?${queryString({ limit: PAGE })}`);
     const { items } = await res.json();
     if (token !== listToken) return;
     $('rows').innerHTML = items.map((r) => rowHtml(r, false)).join('');
@@ -83,7 +83,7 @@
 
   async function pollNew() {
     const token = listToken;
-    const res = await fetch(`/api/logs?${queryString({ afterId: state.maxId, limit: 500 })}`);
+    const res = await fetch(`api/logs?${queryString({ afterId: state.maxId, limit: 500 })}`);
     const { items } = await res.json();
     if (token !== listToken || !items.length) return stamp();
     $('rows').insertAdjacentHTML('afterbegin', items.map((r) => rowHtml(r, true)).join(''));
@@ -95,7 +95,7 @@
 
   async function loadMore() {
     if (state.minId === null) return;
-    const res = await fetch(`/api/logs?${queryString({ beforeId: state.minId, limit: PAGE })}`);
+    const res = await fetch(`api/logs?${queryString({ beforeId: state.minId, limit: PAGE })}`);
     const { items } = await res.json();
     $('rows').insertAdjacentHTML('beforeend', items.map((r) => rowHtml(r, false)).join(''));
     if (items.length) state.minId = items[items.length - 1].id;
@@ -107,7 +107,7 @@
 
   // ---------- 사이드바 ----------
   async function reloadSidebar() {
-    const { services, hosts } = await (await fetch('/api/services')).json();
+    const { services, hosts } = await (await fetch('api/services')).json();
     const all = services.reduce((a, s) => ({ total: a.total + s.total, errors: a.errors + s.errors }), { total: 0, errors: 0 });
     const counts = (t, e) => `<span class="counts"><span>${t.toLocaleString()}</span>${e ? `<span class="cnt-err" title="5xx·응답 없음">${e.toLocaleString()}</span>` : ''}</span>`;
     $('serviceList').innerHTML =
@@ -178,7 +178,7 @@
     state.selectedId = id;
     document.querySelectorAll('#rows tr.sel').forEach((tr) => tr.classList.remove('sel'));
     document.querySelector(`#rows tr[data-id="${id}"]`)?.classList.add('sel');
-    const res = await fetch(`/api/logs/${id}`);
+    const res = await fetch(`api/logs/${id}`);
     if (!res.ok) return;
     const d = await res.json();
     const out = d.kind === 'OUTBOUND';

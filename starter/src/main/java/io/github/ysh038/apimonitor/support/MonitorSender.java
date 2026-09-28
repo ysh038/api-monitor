@@ -6,7 +6,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
@@ -15,7 +14,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,11 +21,10 @@ import org.slf4j.LoggerFactory;
 import io.github.ysh038.apimonitor.ApiMonitorProperties;
 
 /**
- * 모니터링 서버로 이벤트를 fire-and-forget 전송한다.
- * - 요청 스레드는 큐에 넣기만 하고 바로 돌아간다 (직렬화·마스킹도 전송 스레드에서).
+ * 별도 대시보드 서버(Node)로 이벤트를 fire-and-forget 전송한다.
+ * - api-monitor.endpoint 를 지정했거나, discovery-enabled=true 로 자동 탐색을 켠 경우에만 만들어진다.
  * - 큐가 가득 차거나, 서버가 꺼져 있거나, 타임아웃이면 재시도 없이 버린다.
  * - 실패는 DEBUG 로그만 남기고 예외를 던지지 않는다.
- * - endpoint를 설정하지 않았으면 같은 서버의 대시보드를 자동으로 찾고, 찾기 전까지는 캡처 자체를 건너뛴다.
  */
 public class MonitorSender implements AutoCloseable {
 
@@ -103,30 +100,29 @@ public class MonitorSender implements AutoCloseable {
         }
     }
 
-    /** 보낼 곳이 정해져 있는지. false면 필터·인터셉터가 캡처를 건너뛴다. */
+    /** 보낼 곳(대시보드 주소)이 정해져 있는지. */
     public boolean isActive() {
         return endpoint != null;
     }
 
-    /** 이벤트 생성(직렬화 포함)까지 전송 스레드에서 수행한다. */
-    public void send(Supplier<Map<String, Object>> eventSupplier) {
+    /** 직렬화된 이벤트를 전송 스레드에서 보낸다. */
+    public void sendJson(String json) {
         if (endpoint == null) {
             return;
         }
         try {
-            executor.execute(() -> doSend(eventSupplier));
+            executor.execute(() -> doSend(json));
         } catch (RejectedExecutionException e) {
             dropped.incrementAndGet();
         }
     }
 
-    private void doSend(Supplier<Map<String, Object>> eventSupplier) {
+    private void doSend(String body) {
         URI target = endpoint;
         if (target == null) {
             return;
         }
         try {
-            String body = Json.write(eventSupplier.get());
             HttpRequest.Builder req = HttpRequest.newBuilder(target)
                     .timeout(timeout)
                     .header("Content-Type", "application/json; charset=utf-8")

@@ -12,13 +12,21 @@ public final class Json {
     private Json() {
     }
 
+    /** null 값인 필드는 생략한다 (전송·저장 크기 절약). */
     public static String write(Object value) {
         StringBuilder sb = new StringBuilder(1024);
-        append(sb, value);
+        append(sb, value, false);
         return sb.toString();
     }
 
-    private static void append(StringBuilder sb, Object value) {
+    /** null 값인 필드도 "key":null 로 쓴다 (대시보드 API 응답용). */
+    public static String writeWithNulls(Object value) {
+        StringBuilder sb = new StringBuilder(1024);
+        append(sb, value, true);
+        return sb.toString();
+    }
+
+    private static void append(StringBuilder sb, Object value, boolean nulls) {
         if (value == null) {
             sb.append("null");
         } else if (value instanceof CharSequence s) {
@@ -33,7 +41,7 @@ public final class Json {
             sb.append('{');
             boolean first = true;
             for (Map.Entry<?, ?> e : map.entrySet()) {
-                if (e.getValue() == null) {
+                if (e.getValue() == null && !nulls) {
                     continue;
                 }
                 if (!first) {
@@ -42,7 +50,7 @@ public final class Json {
                 first = false;
                 string(sb, String.valueOf(e.getKey()));
                 sb.append(':');
-                append(sb, e.getValue());
+                append(sb, e.getValue(), nulls);
             }
             sb.append('}');
         } else if (value instanceof Collection<?> list) {
@@ -53,7 +61,7 @@ public final class Json {
                     sb.append(',');
                 }
                 first = false;
-                append(sb, item);
+                append(sb, item, nulls);
             }
             sb.append(']');
         } else {

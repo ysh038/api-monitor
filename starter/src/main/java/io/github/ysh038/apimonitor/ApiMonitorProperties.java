@@ -17,16 +17,45 @@ public class ApiMonitorProperties {
     private boolean enabled = true;
 
     /**
-     * 모니터링 서버 수신 주소. 예: http://api-monitor:8081/ingest.
-     * 비어 있으면 같은 서버의 대시보드를 자동으로 찾는다 (api-monitor:8081, host.docker.internal, 게이트웨이, localhost).
+     * 기록 저장 폴더. 상대경로면 앱 실행 폴더 기준 (도커 이미지는 보통 WORKDIR 아래).
+     * 재배포 후에도 남기려면 이 폴더를 볼륨으로 연결한다. 비우면 파일 없이 메모리에만 보관한다.
+     */
+    private String storageDir = "api-monitor-data";
+
+    /** 저장 파일 보관 일수. */
+    private int retentionDays = 30;
+
+    /** 대시보드에서 조회할 수 있도록 메모리에 두는 최근 기록 수. */
+    private int maxEventsInMemory = 5000;
+
+    private final Dashboard dashboard = new Dashboard();
+
+    /**
+     * (선택) 별도 대시보드 서버 수신 주소. 예: http://192.168.0.10:8090/ingest.
+     * 지정하면 내장 대시보드와 함께 이 서버로도 보낸다. 여러 서버의 기록을 한곳에 모을 때 사용.
      */
     private String endpoint;
 
-    /** 자동 탐색 시 찾을 대시보드 포트 (호스트에 공개된 포트). */
+    /** (선택) endpoint 없이 같은 서버의 별도 대시보드(8090)를 자동으로 찾아 보낸다. */
+    private boolean discoveryEnabled = false;
+
+    /** 자동 탐색 시 찾을 별도 대시보드 포트 (호스트에 공개된 포트). */
     private int discoveryPort = 8090;
 
-    /** 대시보드를 못 찾았을 때 다시 찾는 주기. */
+    /** 별도 대시보드를 못 찾았을 때 다시 찾는 주기. */
     private Duration discoveryInterval = Duration.ofSeconds(10);
+
+    public static class Dashboard {
+        /** 앱 안의 대시보드 화면을 연다. */
+        private boolean enabled = true;
+        /** 대시보드 경로 (context-path 아래). */
+        private String path = "/_api-monitor";
+
+        public boolean isEnabled() { return enabled; }
+        public void setEnabled(boolean enabled) { this.enabled = enabled; }
+        public String getPath() { return path; }
+        public void setPath(String path) { this.path = path; }
+    }
 
     /** 대시보드에 표시될 서비스 이름. 비어 있으면 spring.application.name을 쓴다. */
     private String serviceName;
@@ -54,7 +83,7 @@ public class ApiMonitorProperties {
     /** requestId를 찾을 MDC 키. 앱이 이미 MDC에 넣고 있으면 그 값을 그대로 쓴다. */
     private String mdcKey = "requestId";
 
-    /** 모니터링 서버에 보낼 X-Api-Key (서버에 INGEST_API_KEY를 설정한 경우에만 필요). */
+    /** 별도 대시보드 서버에 보낼 X-Api-Key (서버에 INGEST_API_KEY를 설정한 경우에만 필요). */
     private String apiKey;
 
     /** 전송 타임아웃. 넘으면 버린다. */
@@ -63,7 +92,7 @@ public class ApiMonitorProperties {
     /** 전송 전용 스레드 수. */
     private int senderThreads = 2;
 
-    /** 전송 대기열 크기. 가득 차면 새 로그를 버린다. */
+    /** 처리·전송 대기열 크기. 가득 차면 새 기록을 버린다. */
     private int queueCapacity = 1000;
 
     private final Outbound outbound = new Outbound();
@@ -88,6 +117,15 @@ public class ApiMonitorProperties {
     public void setEnabled(boolean enabled) { this.enabled = enabled; }
     public String getEndpoint() { return endpoint; }
     public void setEndpoint(String endpoint) { this.endpoint = endpoint; }
+    public String getStorageDir() { return storageDir; }
+    public void setStorageDir(String storageDir) { this.storageDir = storageDir; }
+    public int getRetentionDays() { return retentionDays; }
+    public void setRetentionDays(int retentionDays) { this.retentionDays = retentionDays; }
+    public int getMaxEventsInMemory() { return maxEventsInMemory; }
+    public void setMaxEventsInMemory(int maxEventsInMemory) { this.maxEventsInMemory = maxEventsInMemory; }
+    public Dashboard getDashboard() { return dashboard; }
+    public boolean isDiscoveryEnabled() { return discoveryEnabled; }
+    public void setDiscoveryEnabled(boolean discoveryEnabled) { this.discoveryEnabled = discoveryEnabled; }
     public int getDiscoveryPort() { return discoveryPort; }
     public void setDiscoveryPort(int discoveryPort) { this.discoveryPort = discoveryPort; }
     public Duration getDiscoveryInterval() { return discoveryInterval; }

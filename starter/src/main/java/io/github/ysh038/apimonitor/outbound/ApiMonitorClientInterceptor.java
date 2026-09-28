@@ -49,7 +49,7 @@ public class ApiMonitorClientInterceptor implements ClientHttpRequestInterceptor
             throws IOException {
         Call call;
         try {
-            call = !ctx.sender().isActive() || excluded(request.getURI()) ? null : begin(request, body);
+            call = !ctx.isActive() || excluded(request.getURI()) ? null : begin(request, body);
         } catch (Throwable t) {
             log.debug("[api-monitor] 외부 호출 캡처 준비 실패 (무시): {}", t.toString());
             call = null;
@@ -131,7 +131,7 @@ public class ApiMonitorClientInterceptor implements ClientHttpRequestInterceptor
                 }
                 final String resCt = resContentType;
                 final BodyCapture.Snapshot resBody = responseBody == null ? null : responseBody.snapshot();
-                ctx.sender().send(() -> {
+                ctx.submit(() -> {
                     Map<String, Object> e = ctx.newEvent("OUTBOUND");
                     e.put("requestId", requestId);
                     e.put("parentRequestId", parentId);

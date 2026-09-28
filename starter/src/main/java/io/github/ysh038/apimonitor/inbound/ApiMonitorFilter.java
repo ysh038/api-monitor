@@ -16,6 +16,7 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
+import io.github.ysh038.apimonitor.dashboard.DashboardEndpoint;
 import io.github.ysh038.apimonitor.support.BodyCapture;
 import io.github.ysh038.apimonitor.support.ExceptionInfo;
 import io.github.ysh038.apimonitor.support.MonitorContext;
@@ -39,20 +40,31 @@ public class ApiMonitorFilter extends OncePerRequestFilter {
     private static final Logger log = LoggerFactory.getLogger(ApiMonitorFilter.class);
 
     private final MonitorContext ctx;
+    private final DashboardEndpoint dashboard;
     private final List<String> excludePaths;
     private final AntPathMatcher matcher = new AntPathMatcher();
 
-    public ApiMonitorFilter(MonitorContext ctx) {
+    /** @param dashboard 내장 대시보드 (끄면 null) */
+    public ApiMonitorFilter(MonitorContext ctx, DashboardEndpoint dashboard) {
         this.ctx = ctx;
+        this.dashboard = dashboard;
         this.excludePaths = ctx.props().getExcludePaths() == null ? List.of() : ctx.props().getExcludePaths();
     }
 
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
+    private static String pathWithinApp(HttpServletRequest request) {
         String path = request.getRequestURI();
         String contextPath = request.getContextPath();
         if (contextPath != null && !contextPath.isEmpty() && path.startsWith(contextPath)) {
             path = path.substring(contextPath.length());
+        }
+        return path.isEmpty() ? "/" : path;
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = pathWithinApp(request);
+        if (dashboard != null && dashboard.matches(path)) {
+            return false; // 대시보드 요청은 doFilterInternal 에서 직접 응답
         }
         for (String pattern : excludePaths) {
             if (matcher.match(pattern, path)) {
@@ -65,7 +77,15 @@ public class ApiMonitorFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
-        if (!ctx.sender().isActive()) {
+        if (dashboard != null) {
+            String path = pathWithinApp(request);
+            if (dashboard.matches(path)) {
+                // Spring Security·컨트롤러보다 먼저 직접 응답한다 (대시보드 요청은 기록하지 않음)
+                dashboard.handle(request, response, path);
+                return;
+            }
+        }
+        if (!ctx.isActive()) {
             // 대시보드를 아직 못 찾았으면 아무것도 하지 않는다
             chain.doFilter(request, response);
             return;
@@ -190,7 +210,7 @@ public class ApiMonitorFilter extends OncePerRequestFilter {
             final BodyCapture.Snapshot resBody = res.capture().snapshot();
             final int statusCode = status;
 
-            ctx.sender().send(() -> {
+            ctx.submit(() -> {
                 Map<String, Object> e = ctx.newEvent("INBOUND");
                 e.put("requestId", requestId);
                 e.put("method", method);
