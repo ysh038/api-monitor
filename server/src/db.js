@@ -38,13 +38,19 @@ function openDatabase(dbPath) {
       exception_cause_class     TEXT,
       exception_cause_message   TEXT,
       exception_causes          TEXT,
-      exception_handled         INTEGER
+      exception_handled         INTEGER,
+      is_mock                   INTEGER NOT NULL DEFAULT 0   -- 개발 모드에서 넣은 가짜 데이터
     );
     CREATE INDEX IF NOT EXISTS idx_logs_created    ON api_logs(created_at);
     CREATE INDEX IF NOT EXISTS idx_logs_service    ON api_logs(service_name, status_code, exception_class);
     CREATE INDEX IF NOT EXISTS idx_logs_request_id ON api_logs(request_id);
     CREATE INDEX IF NOT EXISTS idx_logs_parent     ON api_logs(parent_request_id);
   `);
+  // 이전 버전 DB에는 is_mock 컬럼이 없으므로 추가한다
+  const columns = db.prepare('PRAGMA table_info(api_logs)').all().map((c) => c.name);
+  if (!columns.includes('is_mock')) {
+    db.exec('ALTER TABLE api_logs ADD COLUMN is_mock INTEGER NOT NULL DEFAULT 0');
+  }
   return db;
 }
 
@@ -55,14 +61,14 @@ const INSERT_SQL = `
     status_code, response_headers, response_body, response_body_truncated,
     duration_ms, client_ip, async, created_at, received_at,
     exception_class, exception_message, exception_stacktrace,
-    exception_cause_class, exception_cause_message, exception_causes, exception_handled
+    exception_cause_class, exception_cause_message, exception_causes, exception_handled, is_mock
   ) VALUES (
     @kind, @request_id, @parent_request_id, @service_name, @instance_id, @method, @path, @target_host,
     @request_headers, @request_body, @request_body_truncated,
     @status_code, @response_headers, @response_body, @response_body_truncated,
     @duration_ms, @client_ip, @async, @created_at, @received_at,
     @exception_class, @exception_message, @exception_stacktrace,
-    @exception_cause_class, @exception_cause_message, @exception_causes, @exception_handled
+    @exception_cause_class, @exception_cause_message, @exception_causes, @exception_handled, @is_mock
   )`;
 
 const str = (v) => (v === undefined || v === null ? null : String(v));
@@ -114,6 +120,7 @@ function toRow(event, receivedAt) {
     exception_cause_message: firstCause ? str(firstCause.message) : null,
     exception_causes: causes && causes.length ? JSON.stringify(causes) : null,
     exception_handled: ex ? (ex.handled === undefined ? null : bool(ex.handled)) : null,
+    is_mock: 0, // 수신 데이터의 mock 필드는 무시한다. 개발 모드 Mock API에서만 1로 넣는다
   };
 }
 

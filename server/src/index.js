@@ -4,6 +4,7 @@ const config = require('./config');
 const { openDatabase } = require('./db');
 const { createIngestQueue, ingestRouter } = require('./ingest');
 const { queryRouter } = require('./query');
+const { devRouter } = require('./dev');
 
 const db = openDatabase(config.dbPath);
 const queue = createIngestQueue(db, config);
@@ -24,11 +25,12 @@ setInterval(purgeOldLogs, 60 * 60 * 1000).unref();
 const app = express();
 app.disable('x-powered-by');
 app.use(ingestRouter(queue, config));
-app.use(queryRouter(db, queue));
+app.use(queryRouter(db, queue, config));
+if (config.dev) app.use(devRouter(db)); // npm run dev 일 때만 Mock 데이터 API
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 const server = app.listen(config.port, () => {
-  console.log(`[api-monitor] http://0.0.0.0:${config.port}  (db: ${config.dbPath}, retention: ${config.retentionDays}d)`);
+  console.log(`[api-monitor] http://0.0.0.0:${config.port}  (db: ${config.dbPath}, retention: ${config.retentionDays}d)${config.dev ? '  [DEV 모드: Mock 데이터 기능 켜짐]' : ''}`);
 });
 
 function shutdown() {

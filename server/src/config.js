@@ -17,6 +17,8 @@ function pick(envName, fileKey, fallback) {
 }
 
 module.exports = {
+  // npm run dev (--dev) 로 띄웠을 때만 true: 화면에 DEV 표시와 Mock 데이터 기능이 켜진다
+  dev: process.argv.includes('--dev') || process.env.API_MONITOR_DEV === '1',
   port: Number(pick('PORT', 'port', 8081)),
   dbPath: pick('DB_PATH', 'dbPath', path.join(__dirname, '..', 'data', 'monitor.db')),
   retentionDays: Number(pick('RETENTION_DAYS', 'retentionDays', 30)),

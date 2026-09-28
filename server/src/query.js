@@ -3,7 +3,7 @@ const express = require('express');
 const LIST_COLUMNS = `
   id, kind, request_id, parent_request_id, service_name, instance_id, method, path, target_host,
   status_code, duration_ms, client_ip, async, created_at,
-  exception_class, exception_message, exception_handled`;
+  exception_class, exception_message, exception_handled, is_mock`;
 
 const STATUS_CLASSES = { '2xx': [200, 299], '3xx': [300, 399], '4xx': [400, 499], '5xx': [500, 599] };
 
@@ -51,7 +51,7 @@ const parseJson = (v) => {
   }
 };
 
-function queryRouter(db, queue) {
+function queryRouter(db, queue, config) {
   const router = express.Router();
 
   const childrenStmt = db.prepare(
@@ -118,7 +118,7 @@ function queryRouter(db, queue) {
   // 스타터가 대시보드를 자동으로 찾을 때 이 헤더로 식별한다 (같은 포트의 다른 서비스와 구분)
   router.get('/api/health', (req, res) => {
     res.set('X-Api-Monitor', '1');
-    res.json({ status: 'ok', service: 'api-monitor', ...queue.stats() });
+    res.json({ status: 'ok', service: 'api-monitor', dev: Boolean(config && config.dev), ...queue.stats() });
   });
 
   return router;

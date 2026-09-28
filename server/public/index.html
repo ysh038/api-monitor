@@ -8,8 +8,13 @@
 </head>
 <body>
 <header class="topbar">
-  <div class="brand"><span class="dot"></span>API Monitor</div>
+  <div class="brand"><span class="dot"></span>API Monitor<span id="devBadge" class="dev-badge" hidden title="npm run dev 로 실행 중입니다. Mock 데이터 기능은 개발 모드에서만 보입니다.">DEV 모드</span></div>
   <div class="topbar-right">
+    <div id="devActions" class="dev-actions" hidden>
+      <button id="mockAdd" type="button">Mock 데이터 추가</button>
+      <button id="mockClear" type="button" class="ghost">Mock 삭제</button>
+      <span id="devMsg" class="muted"></span>
+    </div>
     <span id="lastUpdated" class="muted"></span>
     <label class="switch"><input type="checkbox" id="autoRefresh" checked><span>자동 갱신 5초</span></label>
   </div>

@@ -26,13 +26,14 @@
     return `<span class="badge ${cls}">${code}</span>`;
   }
   const shortClass = (c) => (c ? c.split('.').pop() : '');
+  const mockTag = (r) => (r.is_mock ? '<span class="mock-tag" title="개발 모드에서 넣은 Mock 데이터입니다">MOCK</span>' : '');
   function pathCell(r) {
     if (r.kind === 'OUTBOUND') {
-      return `<span class="out-arrow" title="외부 호출">→</span><span class="host">${esc(r.target_host || '')}</span><span class="path">${esc(r.path)}</span>${
+      return `${mockTag(r)}<span class="out-arrow" title="외부 호출">→</span><span class="host">${esc(r.target_host || '')}</span><span class="path">${esc(r.path)}</span>${
         r.parent_request_id ? '' : '<span class="bg-tag" title="HTTP 요청 처리 밖(스케줄러·MQ·별도 스레드)에서 나간 호출">백그라운드</span>'}`;
     }
     const child = r.child_count ? `<span class="child-tag">외부 호출 ${r.child_count}</span>` : '';
-    return `<span class="path">${esc(r.path)}</span>${child}`;
+    return `${mockTag(r)}<span class="path">${esc(r.path)}</span>${child}`;
   }
   function exTag(r) {
     if (!r.exception_class) return '';
@@ -169,7 +170,7 @@
     if (!rows || !rows.length) return '';
     return `<h3 class="sec">${title}</h3><ul class="related">${rows.map((r) => `<li data-id="${r.id}">
       ${badge(r.status_code)}<span class="method">${esc(r.method)}</span>
-      <span class="path" title="${esc((r.target_host || '') + r.path)}">${r.kind === 'OUTBOUND' ? `<span class="out-arrow">→</span><span class="host">${esc(r.target_host || '')}</span>` : `<span class="host">[${esc(r.service_name)}]</span> `}${esc(r.path)}</span>
+      <span class="path" title="${esc((r.target_host || '') + r.path)}">${mockTag(r)}${r.kind === 'OUTBOUND' ? `<span class="out-arrow">→</span><span class="host">${esc(r.target_host || '')}</span>` : `<span class="host">[${esc(r.service_name)}]</span> `}${esc(r.path)}</span>
       <span class="dur">${fmtDur(r.duration_ms)}</span><span class="time muted">${fmtTime(r.created_at)}${r.exception_class ? ' · ' + esc(shortClass(r.exception_class)) : ''}</span>
     </li>`).join('')}</ul>`;
   }
@@ -182,7 +183,7 @@
     if (!res.ok) return;
     const d = await res.json();
     const out = d.kind === 'OUTBOUND';
-    $('dTitle').innerHTML = `${badge(d.status_code)}<span class="method">${esc(d.method)}</span>${out ? `<span class="out-arrow">→</span><span class="host">${esc(d.target_host || '')}</span>` : ''}<span class="path">${esc(d.path)}</span>`;
+    $('dTitle').innerHTML = `${mockTag(d)}${badge(d.status_code)}<span class="method">${esc(d.method)}</span>${out ? `<span class="out-arrow">→</span><span class="host">${esc(d.target_host || '')}</span>` : ''}<span class="path">${esc(d.path)}</span>`;
     const meta = [
       ['서비스', `${esc(d.service_name)}${d.instance_id ? ` <span class="muted">@ ${esc(d.instance_id)}</span>` : ''}`],
       ['구분', out ? (d.parent_request_id ? '외부 호출' : '외부 호출 (백그라운드)') : `들어온 요청${d.async ? ' · 비동기/SSE' : ''}`],
@@ -192,6 +193,7 @@
       out ? ['부모 requestId', d.parent_request_id ? `<span class="path">${esc(d.parent_request_id)}</span><button class="copy" data-copy="${esc(d.parent_request_id)}">복사</button>` : '-'] : ['클라이언트 IP', esc(d.client_ip || '-')],
     ];
     $('dBody').innerHTML = `
+      ${d.is_mock ? '<div class="mock-note">개발 모드에서 넣은 <b>Mock 데이터</b>입니다. 실제 요청이 아닙니다.</div>' : ''}
       <dl class="meta">${meta.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>
       ${resultBlock(d)}
       ${d.related.parent ? relatedList('이 호출을 발생시킨 요청', [d.related.parent]) : ''}
@@ -313,6 +315,37 @@
   }, POLL_MS);
   $('autoRefresh').addEventListener('change', (e) => document.querySelector('.brand .dot').classList.toggle('paused', !e.target.checked));
 
+  // ---------- 개발 모드 (npm run dev) ----------
+  async function setupDevMode() {
+    try {
+      const health = await (await fetch('api/health')).json();
+      if (!health.dev) return; // 운영 서버·스타터 내장 대시보드에서는 아무것도 보이지 않음
+    } catch {
+      return;
+    }
+    document.title = 'API Monitor (DEV)';
+    $('devBadge').hidden = false;
+    $('devActions').hidden = false;
+    const msg = (text) => {
+      $('devMsg').textContent = text;
+      setTimeout(() => ($('devMsg').textContent = ''), 2500);
+    };
+    $('mockAdd').addEventListener('click', async () => {
+      const r = await (await fetch('api/dev/mock', { method: 'POST' })).json();
+      msg(`Mock ${r.inserted}건 추가`);
+      await reloadList();
+      await reloadSidebar();
+    });
+    $('mockClear').addEventListener('click', async () => {
+      const r = await (await fetch('api/dev/mock', { method: 'DELETE' })).json();
+      msg(`Mock ${r.deleted}건 삭제`);
+      closeDetail();
+      await reloadList();
+      await reloadSidebar();
+    });
+  }
+
   reloadList();
   reloadSidebar();
+  setupDevMode();
 })();
