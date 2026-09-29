@@ -45,41 +45,26 @@ export function summarizeRequests(rows: ILogRow[]): IRequestSummary {
     return { total: rows.length, failed, rejected, outboundRelated }
 }
 
-export function getSummaryHeadline(
-    { total, failed, rejected }: IRequestSummary,
+/**
+ * 요약 제목. 건수는 쓰지 않는다 — 불러온 행은 전체 로그가 아니라 화면에 가진 행이라
+ * "요청 4000건 중 2000건" 같은 숫자는 로그가 쌓일수록 의미 없이 커지기만 한다.
+ */
+export const SUMMARY_TITLE = '요청 흐름을 살펴봐요'
+
+/** 제목 아래 상태 한 줄 (숫자 없이) */
+export function getSummaryDescription(
+    { total, failed, rejected, outboundRelated }: IRequestSummary,
     { hasFilter = false }: { hasFilter?: boolean } = {},
 ): string {
-    if (total === 0) return hasFilter ? '조건에 맞는 요청이 없어요' : '아직 받은 요청이 없어요'
-    if (failed > 0) return `요청 ${formatCount(total)}건 중 ${formatCount(failed)}건이 실패했어요`
-    if (rejected > 0) {
-        return `요청 ${formatCount(total)}건 중 ${formatCount(rejected)}건이 4xx로 거부됐어요`
-    }
-    return `요청 ${formatCount(total)}건 모두 정상 처리했어요`
-}
-
-function failureDescription(failed: number, outboundRelated: number): string {
-    if (outboundRelated === 0) return '실패한 요청을 누르면 원인을 볼 수 있어요.'
-    const share =
-        outboundRelated === failed
-            ? `실패한 ${formatCount(failed)}건 모두`
-            : `실패한 ${formatCount(failed)}건 중 ${formatCount(outboundRelated)}건은`
-    return `${share} 외부 서버 호출과 관련 있어요. 서버를 눌러 좁혀 볼 수 있어요.`
-}
-
-export function getSummaryDescription({
-    failed,
-    rejected,
-    outboundRelated,
-}: IRequestSummary): string | null {
+    if (total === 0) return hasFilter ? '조건에 맞는 요청이 없어요.' : '아직 받은 요청이 없어요.'
     if (failed === 0) {
-        return rejected > 0
-            ? '서버 오류(5xx·응답 없음)는 없어요. 거부된 요청을 누르면 이유를 볼 수 있어요.'
-            : null
+        return rejected > 0 ? '서버 오류는 없고, 4xx로 거부된 요청이 있어요.' : '모두 정상 처리했어요.'
     }
-    const description = failureDescription(failed, outboundRelated)
-    return rejected > 0
-        ? `${description} 4xx로 거부된 요청도 ${formatCount(rejected)}건 있어요.`
-        : description
+    const failure =
+        outboundRelated > 0
+            ? '실패한 요청이 있어요. 외부 서버 호출 때문인 것도 있어서 아래 서버를 눌러 좁혀 볼 수 있어요.'
+            : '실패한 요청이 있어요. 누르면 원인을 볼 수 있어요.'
+    return rejected > 0 ? `${failure} 4xx로 거부된 요청도 있어요.` : failure
 }
 
 /** 실패가 있는 외부 호출 대상만, 실패·전체가 많은 순 */

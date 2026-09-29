@@ -4,9 +4,10 @@ import { makeOutbound, makeRow, makeScenario } from '../../mocks/logFixtures'
 
 import {
     getSummaryDescription,
-    getSummaryHeadline,
+    type IRequestSummary,
     summarizeHosts,
     summarizeRequests,
+    SUMMARY_TITLE,
 } from './summary'
 
 describe('summarizeRequests (D1)', () => {
@@ -37,68 +38,62 @@ describe('summarizeRequests (D1)', () => {
     })
 })
 
-describe('문구', () => {
-    it('실패가 있으면 N건 중 M건이 실패했어요', () => {
-        const summary = { total: 38, failed: 10, rejected: 0, outboundRelated: 8 }
-        expect(getSummaryHeadline(summary)).toBe('요청 38건 중 10건이 실패했어요')
-        expect(getSummaryDescription(summary)).toBe(
-            '실패한 10건 중 8건은 외부 서버 호출과 관련 있어요. 서버를 눌러 좁혀 볼 수 있어요.',
+describe('문구 (D3·D3a·D3b) — 건수는 쓰지 않는다', () => {
+    const summary = (overrides: Partial<IRequestSummary>): IRequestSummary => ({
+        total: 10,
+        failed: 0,
+        rejected: 0,
+        outboundRelated: 0,
+        ...overrides,
+    })
+
+    it('D3: 제목은 건수와 관계없이 고정', () => {
+        expect(SUMMARY_TITLE).toBe('요청 흐름을 살펴봐요')
+    })
+
+    it('실패 + 외부 호출 관련', () => {
+        expect(getSummaryDescription(summary({ total: 4000, failed: 2000, outboundRelated: 8 }))).toBe(
+            '실패한 요청이 있어요. 외부 서버 호출 때문인 것도 있어서 아래 서버를 눌러 좁혀 볼 수 있어요.',
         )
     })
 
-    it('D3: 실패도 거부도 없어야 모두 정상 처리했어요', () => {
-        const summary = { total: 12, failed: 0, rejected: 0, outboundRelated: 0 }
-        expect(getSummaryHeadline(summary)).toBe(
-            '요청 12건 모두 정상 처리했어요',
-        )
-        expect(getSummaryDescription(summary)).toBeNull()
-    })
-
-    it('D3a: 실패 없이 4xx 만 있으면 거부됐다고 쓴다 (로그인 실패 401 등)', () => {
-        const summary = { total: 2, failed: 0, rejected: 1, outboundRelated: 0 }
-        expect(getSummaryHeadline(summary)).toBe('요청 2건 중 1건이 4xx로 거부됐어요')
-        expect(getSummaryDescription(summary)).toBe(
-            '서버 오류(5xx·응답 없음)는 없어요. 거부된 요청을 누르면 이유를 볼 수 있어요.',
+    it('외부 호출과 무관한 실패만', () => {
+        expect(getSummaryDescription(summary({ failed: 2 }))).toBe(
+            '실패한 요청이 있어요. 누르면 원인을 볼 수 있어요.',
         )
     })
 
-    it('D3b: 실패와 거부가 함께 있으면 설명에 거부 건수를 덧붙인다', () => {
-        const summary = { total: 14, failed: 5, rejected: 3, outboundRelated: 4 }
-        expect(getSummaryHeadline(summary)).toBe('요청 14건 중 5건이 실패했어요')
-        expect(getSummaryDescription(summary)).toBe(
-            '실패한 5건 중 4건은 외부 서버 호출과 관련 있어요. 서버를 눌러 좁혀 볼 수 있어요. 4xx로 거부된 요청도 3건 있어요.',
-        )
-        expect(
-            getSummaryDescription({ total: 5, failed: 1, rejected: 2, outboundRelated: 0 }),
-        ).toBe('실패한 요청을 누르면 원인을 볼 수 있어요. 4xx로 거부된 요청도 2건 있어요.')
-    })
-
-    it('외부 호출과 무관한 실패만 있으면 행을 눌러 보라고 안내한다', () => {
-        expect(
-            getSummaryDescription({ total: 5, failed: 2, rejected: 0, outboundRelated: 0 }),
-        ).toBe('실패한 요청을 누르면 원인을 볼 수 있어요.')
-    })
-
-    it('실패 전부가 외부 호출 관련이면 모두라고 쓴다', () => {
-        expect(
-            getSummaryDescription({ total: 5, failed: 2, rejected: 0, outboundRelated: 2 }),
-        ).toBe(
-            '실패한 2건 모두 외부 서버 호출과 관련 있어요. 서버를 눌러 좁혀 볼 수 있어요.',
+    it('4xx 만 (로그인 실패 401 등)', () => {
+        expect(getSummaryDescription(summary({ rejected: 1 }))).toBe(
+            '서버 오류는 없고, 4xx로 거부된 요청이 있어요.',
         )
     })
 
-    it('행이 없으면 필터 여부에 따라 다른 문구', () => {
-        const empty = { total: 0, failed: 0, rejected: 0, outboundRelated: 0 }
-        expect(getSummaryHeadline(empty)).toBe('아직 받은 요청이 없어요')
-        expect(getSummaryHeadline(empty, { hasFilter: true })).toBe(
-            '조건에 맞는 요청이 없어요',
+    it('모두 정상', () => {
+        expect(getSummaryDescription(summary({}))).toBe('모두 정상 처리했어요.')
+    })
+
+    it('0건이면 필터 여부에 따라 다른 문구', () => {
+        const empty = summary({ total: 0 })
+        expect(getSummaryDescription(empty)).toBe('아직 받은 요청이 없어요.')
+        expect(getSummaryDescription(empty, { hasFilter: true })).toBe('조건에 맞는 요청이 없어요.')
+    })
+
+    it('D3b: 실패와 4xx 가 함께 있으면 4xx 도 알린다', () => {
+        expect(getSummaryDescription(summary({ failed: 5, rejected: 3, outboundRelated: 4 }))).toBe(
+            '실패한 요청이 있어요. 외부 서버 호출 때문인 것도 있어서 아래 서버를 눌러 좁혀 볼 수 있어요. 4xx로 거부된 요청도 있어요.',
         )
     })
 
-    it('천 단위 구분 기호', () => {
-        expect(
-            getSummaryHeadline({ total: 1234, failed: 0, rejected: 0, outboundRelated: 0 }),
-        ).toBe('요청 1,234건 모두 정상 처리했어요')
+    it('설명에 건수가 들어가지 않는다 (4xx 같은 상태 범주 표기는 제외)', () => {
+        const cases = [
+            summary({ total: 1234, failed: 567, rejected: 89, outboundRelated: 12 }),
+            summary({ total: 1234, rejected: 89 }),
+            summary({ total: 1234 }),
+        ]
+        for (const c of cases) {
+            expect(getSummaryDescription(c).replace(/\b[1-5]xx\b/g, '')).not.toMatch(/\d/)
+        }
     })
 })
 

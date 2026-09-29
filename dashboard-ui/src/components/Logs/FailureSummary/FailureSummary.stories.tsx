@@ -24,11 +24,11 @@ type TStory = StoryObj<typeof meta>
 export const WithFailures: TStory = {
     play: async ({ canvas, userEvent, args }) => {
         await expect(
-            canvas.getByRole('heading', { level: 1, name: '요청 14건 중 5건이 실패했어요' }),
+            canvas.getByRole('heading', { level: 1, name: '요청 흐름을 살펴봐요' }),
         ).toBeVisible()
         await expect(
             canvas.getByText(
-                '실패한 5건 중 4건은 외부 서버 호출과 관련 있어요. 서버를 눌러 좁혀 볼 수 있어요. 4xx로 거부된 요청도 3건 있어요.',
+                '실패한 요청이 있어요. 외부 서버 호출 때문인 것도 있어서 아래 서버를 눌러 좁혀 볼 수 있어요. 4xx로 거부된 요청도 있어요.',
             ),
         ).toBeVisible()
         // D4
@@ -47,18 +47,16 @@ export const HostSelected: TStory = {
     },
 }
 
-/** D3: 실패도 거부도 없어야 모두 정상. 호스트 카드도 없다 */
+/** D3a: 실패도 거부도 없어야 모두 정상. 호스트 카드도 없다 */
 export const AllGood: TStory = {
     args: { rows: [makeRow(), makeRow(), makeRow({ statusCode: 302 })] },
     play: async ({ canvas }) => {
-        await expect(
-            canvas.getByRole('heading', { name: '요청 3건 모두 정상 처리했어요' }),
-        ).toBeVisible()
+        await expect(canvas.getByText('모두 정상 처리했어요.')).toBeVisible()
         await expect(canvas.queryByRole('button')).toBeNull()
     },
 }
 
-/** D3a: 5xx 없이 401 로그인 실패만 있으면 "모두 정상"이 아니라 거부로 알린다 */
+/** D3a: 5xx 없이 401 로그인 실패만 있으면 "모두 정상"이 아니라 4xx 가 있다고 알린다 */
 export const OnlyRejected: TStory = {
     args: {
         rows: [
@@ -72,14 +70,7 @@ export const OnlyRejected: TStory = {
         ],
     },
     play: async ({ canvas }) => {
-        await expect(
-            canvas.getByRole('heading', { name: '요청 2건 중 1건이 4xx로 거부됐어요' }),
-        ).toBeVisible()
-        await expect(
-            canvas.getByText(
-                '서버 오류(5xx·응답 없음)는 없어요. 거부된 요청을 누르면 이유를 볼 수 있어요.',
-            ),
-        ).toBeVisible()
+        await expect(canvas.getByText('서버 오류는 없고, 4xx로 거부된 요청이 있어요.')).toBeVisible()
         await expect(canvas.queryByRole('button')).toBeNull()
     },
 }
@@ -87,7 +78,8 @@ export const OnlyRejected: TStory = {
 export const Empty: TStory = {
     args: { rows: [] },
     play: async ({ canvas }) => {
-        await expect(canvas.getByRole('heading', { name: '아직 받은 요청이 없어요' })).toBeVisible()
+        await expect(canvas.getByRole('heading', { name: '요청 흐름을 살펴봐요' })).toBeVisible()
+        await expect(canvas.getByText('아직 받은 요청이 없어요.')).toBeVisible()
     },
 }
 
@@ -132,12 +124,12 @@ export const NarrowOneLine: TStory = {
     ),
     play: async ({ canvas }) => {
         const headline = canvas.getByRole('heading', { level: 1 })
-        await expect(headline).toHaveAttribute('title', '요청 14건 중 5건이 실패했어요')
+        await expect(headline).toHaveAttribute('title', '요청 흐름을 살펴봐요')
         const headlineStyle = getComputedStyle(headline)
         await expect(headlineStyle.whiteSpace).toBe('nowrap')
         await expect(headlineStyle.textOverflow).toBe('ellipsis')
         await expect(headlineStyle.fontVariantNumeric).toContain('tabular-nums')
-        const description = canvas.getByText(/실패한 5건 중 4건은/)
+        const description = canvas.getByText(/실패한 요청이 있어요/)
         await expect(description).toHaveAttribute('title')
         await expect(getComputedStyle(description).whiteSpace).toBe('nowrap')
     },
