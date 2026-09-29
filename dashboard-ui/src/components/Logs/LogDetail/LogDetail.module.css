@@ -1,0 +1,298 @@
+.detail {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-6) var(--space-5) var(--space-12);
+}
+
+.stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.pillRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    padding-right: var(--space-12);
+}
+
+.headline {
+    margin: 0;
+    color: var(--color-text);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    overflow-wrap: anywhere;
+}
+
+.request {
+    display: flex;
+    gap: var(--space-2);
+    align-items: baseline;
+    margin: 0;
+    color: var(--color-text-muted);
+}
+
+.method {
+    flex: none;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+}
+
+.muted {
+    color: var(--color-text-muted);
+}
+
+/* ---------- 예외 박스 ---------- */
+.exception {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--exception-base);
+    border-radius: var(--radius-md);
+    background: var(--exception-subtle);
+}
+
+.exceptionDanger {
+    --exception-base: var(--color-danger);
+    --exception-subtle: var(--color-danger-subtle);
+    --exception-strong: var(--color-danger-strong);
+}
+
+.exceptionWarning {
+    --exception-base: var(--color-warning);
+    --exception-subtle: var(--color-warning-subtle);
+    --exception-strong: var(--color-warning-strong);
+}
+
+.exceptionLabel {
+    color: var(--exception-strong);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.03em;
+}
+
+.exceptionClass {
+    color: var(--color-text);
+    font-family: var(--font-family-mono);
+    font-weight: var(--font-weight-bold);
+    overflow-wrap: anywhere;
+}
+
+.exceptionMessage {
+    margin: 0;
+    color: var(--color-text);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.causes {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.cause {
+    margin-left: var(--space-1);
+    padding: var(--space-1) 0 var(--space-1) var(--space-3);
+    border-left: 2px solid var(--exception-base);
+    color: var(--color-text);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    overflow-wrap: anywhere;
+}
+
+.causeMessage {
+    color: var(--color-text-muted);
+}
+
+.appFrame {
+    color: var(--color-primary-strong);
+    font-weight: var(--font-weight-semibold);
+}
+
+.toggle {
+    align-self: flex-start;
+}
+
+/* ---------- 호출 흐름 ---------- */
+.flow {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.flowItem {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    width: 100%;
+    padding: var(--space-2) 0;
+    border: 0;
+    background: none;
+    color: var(--color-text);
+    text-align: left;
+}
+
+.flowChild {
+    padding-left: var(--space-4);
+}
+
+button.flowItem {
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background-color var(--duration-fast) var(--easing-standard);
+}
+
+button.flowItem:hover {
+    background: var(--color-surface-hover);
+}
+
+button.flowItem:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+}
+
+.flowLine {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+}
+
+.flowLabel {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.flowRoot .flowLabel {
+    font-weight: var(--font-weight-bold);
+}
+
+.flowDuration {
+    flex: none;
+    font-family: var(--font-family-base);
+}
+
+.flowDanger {
+    color: var(--color-danger-strong);
+}
+
+.flowWarning {
+    color: var(--color-warning-strong);
+}
+
+.axis {
+    display: flex;
+    justify-content: space-between;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 연관 목록 ---------- */
+.related {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    list-style: none;
+    overflow: hidden;
+}
+
+.related li + li {
+    border-top: 1px solid var(--color-border);
+}
+
+.relatedItem {
+    display: grid;
+    grid-template-columns: 72px 52px minmax(0, 1fr) auto;
+    gap: var(--space-2);
+    align-items: center;
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    border: 0;
+    background: var(--color-surface);
+    color: var(--color-text);
+    text-align: left;
+    cursor: pointer;
+    transition: background-color var(--duration-fast) var(--easing-standard);
+}
+
+.relatedItem:hover {
+    background: var(--color-surface-hover);
+}
+
+.relatedItem:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+}
+
+.relatedMeta {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+/* ---------- 요청 / 응답 ---------- */
+.panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding-top: var(--space-4);
+}
+
+.panel[hidden] {
+    display: none;
+}
+
+.headers {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+}
+
+.headers th,
+.headers td {
+    padding: var(--space-1) var(--space-2);
+    border-bottom: 1px solid var(--color-border);
+    text-align: left;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+}
+
+.headers th {
+    width: 40%;
+    color: var(--color-text-muted);
+    font-weight: var(--font-weight-normal);
+}
+
+.none {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-style: italic;
+}
+
+.truncated {
+    margin: 0;
+    color: var(--color-warning-strong);
+    font-size: var(--font-size-sm);
+}
