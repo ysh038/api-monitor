@@ -1,0 +1,290 @@
+{
+    "version": "1.0.0",
+    "createdAt": "2026-09-29T00:40:28.515Z",
+    "preset": "react-fe",
+    "agents": [
+        "cursor",
+        "claude"
+    ],
+    "modules": [
+        "design-system",
+        "lint"
+    ],
+    "files": [
+        {
+            "path": "AGENTS.md",
+            "sha256": "be825286b7a0b96164645d55df40a1e43ea6b69948081e3be5e1159af77040cd",
+            "module": "core"
+        },
+        {
+            "path": "CLAUDE.md",
+            "sha256": "aeadd759b0b3a2a9d3b332ab64e3dcaa611357a5d0d3059e71341c165a19fdbe",
+            "module": "core"
+        },
+        {
+            "path": ".harness/config.json",
+            "sha256": "2133eaca24a8ff0b1d207ae000ba56e6d134407d1f9283fd420068c6ee284513",
+            "module": "core"
+        },
+        {
+            "path": ".cursor/rules/00-core.mdc",
+            "sha256": "38674fab55e1e8dbebdfda0530e4b3324d7fe6172badf9bbea859f5006214a1d",
+            "module": "core"
+        },
+        {
+            "path": ".cursor/rules/10-architecture.mdc",
+            "sha256": "1a439456577b4474b00f51a9fc04a35837990d15217ac73b5b4cfaf4f1b13972",
+            "module": "core"
+        },
+        {
+            "path": ".cursor/rules/20-data-fetching.mdc",
+            "sha256": "9692ed4389f2d8fdebbe514c9d734e03685a8ae817e3c7531acaaa1b1dd788bd",
+            "module": "core"
+        },
+        {
+            "path": ".cursor/rules/30-design-system.mdc",
+            "sha256": "90be2815875f8fd05d804e2b48fb57533585a5707c0f2b1d8ec9c06ad2d89ec1",
+            "module": "core"
+        },
+        {
+            "path": ".cursor/rules/40-testing.mdc",
+            "sha256": "37df42cb41e4f9108740bb6eea066b7a052ef01c4b9f893e16c852e856ac6377",
+            "module": "core"
+        },
+        {
+            "path": ".cursor/rules/50-auth-http.mdc",
+            "sha256": "935f629df6dc23402d3b2153a0e620c54391d354b11bcaf3d7c56bcf2e07c1a9",
+            "module": "core"
+        },
+        {
+            "path": ".cursor/commands/spec.md",
+            "sha256": "e6e4bdc0ebf8c547123a177a9c373c03933cab6ae13643e7ead9b5ccc899b0cd",
+            "module": "core"
+        },
+        {
+            "path": ".cursor/commands/impl.md",
+            "sha256": "f868da35847aa941eba9eda204b112c21d3108f081f18e55f84e95eb3553af29",
+            "module": "core"
+        },
+        {
+            "path": ".cursor/commands/verify.md",
+            "sha256": "03ce60d4cb148a0d6560dacc89958c03c2ff001537bfe7303d0f3ae32d288d5c",
+            "module": "core"
+        },
+        {
+            "path": ".cursor/commands/ship.md",
+            "sha256": "1044651201ee27bba121049de5ccd838d5c14292d7d8c346fdb510a9bfb3f81c",
+            "module": "core"
+        },
+        {
+            "path": ".cursor/commands/qa.md",
+            "sha256": "438f33c1413430e1a4fcfb11373c005b6bb434ee5d58894b9dbce6c700e2454c",
+            "module": "core"
+        },
+        {
+            "path": ".cursor/commands/harness-setup.md",
+            "sha256": "709e195a1833361b908ef9d14264971159356f5fce1bd53d93b5fb137657541a",
+            "module": "core"
+        },
+        {
+            "path": ".cursor/commands/ds-init.md",
+            "sha256": "251ccf8a1191da4e65c4ec9103d88b563ec1fcead76811fbc2572862ddb568cc",
+            "module": "core"
+        },
+        {
+            "path": ".cursor/commands/ds-add.md",
+            "sha256": "53b120d37f695bb2cb01d591de70d0ba971c1fa92f13ffb2e8cfeea87a7b570d",
+            "module": "core"
+        },
+        {
+            "path": ".cursor/commands/ux-review.md",
+            "sha256": "dad317c80abdc094b38e90620cd486092cbccdb7c210b7b9b1cfde604c46da07",
+            "module": "core"
+        },
+        {
+            "path": ".cursor/commands/ds-ref.md",
+            "sha256": "82b03da7ebe859728dd3d949021c152b3a13afc98d3c4339f62270702dcba141",
+            "module": "core"
+        },
+        {
+            "path": ".claude/skills/spec/SKILL.md",
+            "sha256": "7cfc07abb32c3fb5e294adfa904bd15ac57545b556643f3cd509286cda1ff69b",
+            "module": "core"
+        },
+        {
+            "path": ".claude/skills/impl/SKILL.md",
+            "sha256": "b278dd24b70fbe79f383b4360aaa16effa72fc41c74904d1812461024403bfaf",
+            "module": "core"
+        },
+        {
+            "path": ".claude/skills/verify/SKILL.md",
+            "sha256": "6983567062ab2bc26b82e82b7745d3032d49e4eeeec5c08abe43f55374c4859c",
+            "module": "core"
+        },
+        {
+            "path": ".claude/skills/ship/SKILL.md",
+            "sha256": "1963db2c62c695e656c8a32dc5b1feb020d0071f501f2d92512b78ba0cf63438",
+            "module": "core"
+        },
+        {
+            "path": ".claude/skills/qa/SKILL.md",
+            "sha256": "fbb3e023a4f3cdc691e4b7718cd148519bd636bcc78ebf41ae76bbcb0ef498d1",
+            "module": "core"
+        },
+        {
+            "path": ".claude/skills/harness-setup/SKILL.md",
+            "sha256": "f09b82ad2e0f09801045c9a4a7c5b69235a166df37fdfe368b0c6e00f92b33cd",
+            "module": "core"
+        },
+        {
+            "path": ".claude/skills/design-system/SKILL.md",
+            "sha256": "f61e9eea0a72c41a357e2802221d1723502af280573c035a8df5f4d1aba6969f",
+            "module": "core"
+        },
+        {
+            "path": ".claude/skills/ux-review/SKILL.md",
+            "sha256": "927fff0cc1a15cbc5c2380a7368d72591f9b1f8cda15a41af8bbed7eb91a0505",
+            "module": "core"
+        },
+        {
+            "path": ".claude/skills/ds-ref/SKILL.md",
+            "sha256": "58c7e31a15b27e9195176081e08d609358358d62ba5c066b16e5a0e608f1cd17",
+            "module": "core"
+        },
+        {
+            "path": ".claude/agents/qa-tester.md",
+            "sha256": "928d9382da09a0ba78564264d99a0fcfec350e5fe2980c5995b336e65cf4c953",
+            "module": "core"
+        },
+        {
+            "path": ".harness/gates/pre-commit-gate.sh",
+            "sha256": "021135d07e9c7e76ef646f6543e7fe42ae711fc52c0f22e55dfa34308ef7a2ae",
+            "module": "core"
+        },
+        {
+            "path": ".harness/gates/gate.mjs",
+            "sha256": "ff6c20b15a8ded9ce4dd53c415b707b013718920ca599267f88457a5fda3c340",
+            "module": "core"
+        },
+        {
+            "path": ".harness/gates/run-checks.mjs",
+            "sha256": "5a580df95e522ad98249004e1fd739cc88ea816a3fee8dcf7d8420af48491523",
+            "module": "core"
+        },
+        {
+            "path": ".harness/gates/design-ref-check.mjs",
+            "sha256": "4ca6d0d1b72664eacdac32753fcd7ddb0b0647811348a6f9779a0376c2f6eae0",
+            "module": "core"
+        },
+        {
+            "path": ".harness/gates/storybook-check.mjs",
+            "sha256": "40183a9cc5588e95dbaafafe0d2c894df1dcc9418378287bffb16be5dc9c8415",
+            "module": "core"
+        },
+        {
+            "path": ".harness/gates/structure-check.mjs",
+            "sha256": "67aac67c200fbfa9a783c925e32e2a25336786ef49020fdf8c7ce0d4c99c972a",
+            "module": "core"
+        },
+        {
+            "path": ".harness/gates/ui-prereq-check.mjs",
+            "sha256": "4eaf4dabd51033445cb4664cb8330f3b054a0d2fe16ca70bf9abfa81608526df",
+            "module": "core"
+        },
+        {
+            "path": ".harness/gates/pre-write-gate.sh",
+            "sha256": "8e372d5042cafce20e14f16891126c145ac7bdebe7362879cd7572e1fd4f6702",
+            "module": "core"
+        },
+        {
+            "path": ".harness/gates/pre-write-gate.mjs",
+            "sha256": "071e6ce4250aaab9362bb22a7bcd07759606f1d39fe06bbea2afc8d60e72c4c8",
+            "module": "core"
+        },
+        {
+            "path": ".harness/gates/before-shell-gate.sh",
+            "sha256": "0b8e789cad6477ad98e5a73a017e99ba364ab00b2add89dab8f4a5dd70c00666",
+            "module": "core"
+        },
+        {
+            "path": ".harness/gates/before-shell-gate.mjs",
+            "sha256": "b561424c3a97d08d58c82a74eeca35a6da76eeffc4d669a70b2329d7cc575d62",
+            "module": "core"
+        },
+        {
+            "path": ".cursor/hooks.json",
+            "sha256": "aa73dbeb678b42537f2f9b52eb2c770adf618b03f1b1882d9944143e1e8daad8",
+            "module": "core"
+        },
+        {
+            "path": ".claude/settings.json",
+            "sha256": "9e046dc64cf9e9ddb308db8764f015672b5e69a60d0b587e75f457d856b49115",
+            "module": "core"
+        },
+        {
+            "path": "docs/architecture.md",
+            "sha256": "d8497ef5a973cad5570fd96957acbd1ca9fc649b793483d193aac495884f8437",
+            "module": "core"
+        },
+        {
+            "path": "docs/decisions.md",
+            "sha256": "95ce447bfce21b1d683eb30d38623a54773bf0de4f8293707e915a8e4d5d3c76",
+            "module": "core"
+        },
+        {
+            "path": "docs/product-spec.md",
+            "sha256": "538a58b02016b4bfa34984213be104b82b71462a174032c841f2ad46627e8069",
+            "module": "core"
+        },
+        {
+            "path": "docs/task-log.md",
+            "sha256": "d6cd71e9426252b4257c672ff8947830fcbfc5bb170b4fee683013331ddd56c5",
+            "module": "core"
+        },
+        {
+            "path": "docs/specs/_template.md",
+            "sha256": "4a8296510ff35e32f2386d064a104a2763be3991beb901f775abb9c9da79768c",
+            "module": "core"
+        },
+        {
+            "path": "src/design-system/tokens.css",
+            "sha256": "537fc3fe333298d1ae67fb5e7f9bb3707dbf2d5a86bc22885c9b241336fe6510",
+            "module": "design-system"
+        },
+        {
+            "path": "src/design-system/tokens.ts",
+            "sha256": "f2b955b80495ff5760ec047787f7c0e2cdb83c855e3dbbdebf869df9a710b722",
+            "module": "design-system"
+        },
+        {
+            "path": "src/design-system/_story-template.tsx",
+            "sha256": "20d7df7dd339e7713be24ae3376784e33273f1561b7f0acb4e402c5317cdb52d",
+            "module": "design-system"
+        },
+        {
+            "path": "stylelint.config.js",
+            "sha256": "0e6342ebc95aad3c8ec84a950fbe8aa59a118a68d8726dda8ea1bec08f7c6420",
+            "module": "design-system"
+        },
+        {
+            "path": "eslint.harness.config.js",
+            "sha256": "e12bc193209c841bf91ed2736a6b8db14d9ef37f8551ea7f2d80ab0c8d32432c",
+            "module": "lint"
+        },
+        {
+            "path": "commitlint.config.js",
+            "sha256": "12e98ca5866b59735740e7615caa1a916c0345ae5fdb480f287e7077ffebbe93",
+            "module": "lint"
+        },
+        {
+            "path": "prettier.config.js",
+            "sha256": "f20a3f8ed6fde0c57fd8f116af1c709494351310e374150cb1b32dfe04247ac0",
+            "module": "lint"
+        },
+        {
+            "path": ".harness/design-references.json",
+            "sha256": "fcf0bf4a132e9b470544ec37bcac179b275a2886fc0dd1cdf285aea14f5759fe",
+            "module": "core"
+        }
+    ]
+}
