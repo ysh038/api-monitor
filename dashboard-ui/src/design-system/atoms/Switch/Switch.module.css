@@ -1,0 +1,61 @@
+.switch {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-text);
+    cursor: pointer;
+    user-select: none;
+}
+
+/* 네이티브 체크박스는 접근성 트리에 남기고 보이지만 않게 한다 */
+.input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    opacity: 0;
+}
+
+.track {
+    position: relative;
+    flex: none;
+    width: 38px;
+    height: 22px;
+    border-radius: var(--radius-full);
+    background: var(--color-border-strong);
+    transition: background-color var(--duration-base) var(--easing-standard);
+}
+
+.track::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    border-radius: var(--radius-full);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--duration-base) var(--easing-standard);
+}
+
+.input:checked + .track {
+    background: var(--color-primary);
+}
+
+.input:checked + .track::after {
+    transform: translateX(16px);
+}
+
+.switch:hover .track {
+    background: var(--color-secondary);
+}
+
+.switch:hover .input:checked + .track {
+    background: var(--color-primary-hover);
+}
+
+.input:focus-visible + .track {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+}

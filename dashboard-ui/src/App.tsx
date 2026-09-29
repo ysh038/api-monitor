@@ -1,10 +1,22 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { useState } from 'react'
+
+import DashboardPage from './pages/DashboardPage'
+
 function App() {
-  return (
-    <main>
-      <h1>API Monitor</h1>
-      <p>React 이전 작업 중입니다. 기존 화면은 server/public 에 있습니다.</p>
-    </main>
-  )
+    const [queryClient] = useState(
+        () =>
+            new QueryClient({
+                defaultOptions: {
+                    queries: { retry: 1 },
+                },
+            }),
+    )
+    return (
+        <QueryClientProvider client={queryClient}>
+            <DashboardPage />
+        </QueryClientProvider>
+    )
 }
 
 export default App

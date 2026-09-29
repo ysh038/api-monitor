@@ -1,0 +1,18 @@
+.top {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    padding: var(--space-6) var(--space-6) var(--space-4);
+}
+
+/* overflow 를 자르지 않는다 — 자르면 표 머리글의 sticky 기준이 이 상자로 바뀐다.
+   대신 아래 여백으로 마지막 줄이 카드의 둥근 모서리에 닿지 않게 한다 */
+.body {
+    padding-bottom: var(--radius-lg);
+}
+
+@media (max-width: 760px) {
+    .top {
+        padding: var(--space-4);
+    }
+}
