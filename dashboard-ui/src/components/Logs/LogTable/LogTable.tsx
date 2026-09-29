@@ -19,6 +19,8 @@ export interface ILogTableProps {
     hasMore: boolean
     isLoading: boolean
     isLoadingMore: boolean
+    /** 필터를 바꿔 새 결과를 기다리는 중 — 이전 행을 흐리게 유지한다 */
+    isUpdating: boolean
     onSelect: (id: number) => void
     onLoadMore: () => void
 }
@@ -37,6 +39,7 @@ function LogTable({
     hasMore,
     isLoading,
     isLoadingMore,
+    isUpdating,
     onSelect,
     onLoadMore,
 }: ILogTableProps) {
@@ -78,7 +81,10 @@ function LogTable({
     )
 
     return (
-        <div className={styles.wrap}>
+        <div className={styles.wrap} aria-busy={isUpdating}>
+            {isUpdating ? (
+                <div className={styles.updatingBar} role="progressbar" aria-label="새 결과를 불러오는 중" />
+            ) : null}
             <table className={styles.table}>
                 <caption className={styles.caption}>요청 기록 목록</caption>
                 <colgroup>
@@ -168,7 +174,7 @@ function LogTable({
             ) : null}
             {hasMore ? (
                 <div className={styles.more}>
-                    <Button variant="outline" disabled={isLoadingMore} onClick={onLoadMore}>
+                    <Button variant="outline" disabled={isLoadingMore || isUpdating} onClick={onLoadMore}>
                         {isLoadingMore ? '불러오는 중…' : '더 보기'}
                     </Button>
                 </div>

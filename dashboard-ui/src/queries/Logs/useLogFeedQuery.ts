@@ -1,4 +1,5 @@
 import {
+    keepPreviousData,
     useInfiniteQuery,
     useQueryClient,
     type InfiniteData,
@@ -20,6 +21,9 @@ type TFeedData = InfiniteData<ILogRow[], number | null>
  * 캐시가 폴링으로만 갱신되도록 자동 재요청은 모두 끈다 — 무한 쿼리를 재요청하면
  * 모든 페이지를 다시 받는데, 폴링으로 끼운 페이지 때문에 중복이 생긴다.
  * 처음부터 다시 받을 때는 resetQueries 로 첫 페이지만 받는다.
+ *
+ * 필터를 바꾸면 새 결과가 올 때까지 이전 결과를 그대로 보여 준다 (keepPreviousData).
+ * 그동안 isUpdating 이 true 다 — 빈 표·"불러오는 중"으로 깜빡이지 않게 (dashboard-smooth-filter).
  */
 export function useLogFeedQuery(filters: ILogFilters) {
     const queryClient = useQueryClient()
@@ -41,6 +45,7 @@ export function useLogFeedQuery(filters: ILogFilters) {
         gcTime: 0,
         refetchOnWindowFocus: false,
         refetchOnReconnect: false,
+        placeholderData: keepPreviousData,
     })
 
     const rows = useMemo(() => query.data?.pages.flat() ?? [], [query.data])
@@ -66,6 +71,8 @@ export function useLogFeedQuery(filters: ILogFilters) {
     return {
         rows,
         isLoading: query.isPending,
+        /** 필터를 바꿔 새 결과를 기다리는 중 (rows 는 이전 필터의 결과) */
+        isUpdating: query.isPlaceholderData,
         isError: query.isError,
         hasMore: query.hasNextPage,
         isLoadingMore: query.isFetchingNextPage,

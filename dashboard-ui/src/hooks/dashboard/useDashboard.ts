@@ -164,6 +164,7 @@ export function useDashboard() {
         // 목록
         rows: feed.rows,
         isLoading: feed.isLoading,
+        isUpdating: feed.isUpdating,
         hasMore: feed.hasMore,
         isLoadingMore: feed.isLoadingMore,
         loadMore: () => void feed.loadMore(),

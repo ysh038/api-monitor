@@ -5,6 +5,13 @@
 
 ## 결정
 
+### 2026-09-29 필터를 바꿀 때 화면이 비지 않게 (docs/specs/dashboard-smooth-filter.md)
+
+#### 이전 결과 유지 + 진행 막대, 흐리게 하지 않음
+- **결정**: 목록 무한 쿼리에 `placeholderData: keepPreviousData`. 새 결과를 기다리는 동안(`isPlaceholderData`) 표 위에 얇은 진행 막대와 `aria-busy` 를 둔다. "더 보기"는 잠근다.
+- **대안**: 행을 반투명(opacity)으로 흐리게.
+- **근거**: 필터마다 새 캐시 키(`gcTime: 0`)로 시작해서 표가 0행 → "불러오는 중" → 새 결과로 깜빡였고, 사용자가 페이지 새로고침으로 느꼈다. 흐리게 하면 글자 대비가 2.2:1 까지 떨어져 스토리 a11y 검사(AA 4.5:1)가 실패했다.
+
 ### 2026-09-29 테마 전환 · 개발 포트 고정 · API 연결 안내 (docs/specs/dashboard-dev-ux.md)
 
 #### 다크 색상은 `data-theme` 속성으로만 켠다

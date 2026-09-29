@@ -21,6 +21,7 @@ const meta = {
         hasMore: false,
         isLoading: false,
         isLoadingMore: false,
+        isUpdating: false,
         onSelect: fn(),
         onLoadMore: fn(),
     },
@@ -137,5 +138,30 @@ export const NewRows: TStory = {
         const table = within(canvasElement)
         const row = table.getByText('/api/v1/payments/7781').closest('tr')
         await expect(row).toHaveAttribute('data-new', 'true')
+    },
+}
+
+/** S1·S2·S4: 필터를 바꾸는 중 — 이전 결과를 그대로 보이며 갱신 중 표시, 더 보기 잠금 */
+export const Updating: TStory = {
+    args: { isUpdating: true, hasMore: true, hasFilter: true },
+    play: async ({ canvas }) => {
+        const table = canvas.getByRole('table')
+        await expect(table.closest('[aria-busy]')).toHaveAttribute('aria-busy', 'true')
+        await expect(canvas.getByRole('progressbar', { name: '새 결과를 불러오는 중' })).toBeInTheDocument()
+        await expect(canvas.getByText('pg-gateway:9000')).toBeVisible()
+        await expect(canvas.queryByText('불러오는 중이에요…')).toBeNull()
+        await expect(canvas.queryByText('조건에 맞는 로그가 없습니다.')).toBeNull()
+        await expect(canvas.getByRole('button', { name: '더 보기' })).toBeDisabled()
+    },
+}
+
+/** S3: 갱신이 끝나면 aria-busy 가 풀린다 */
+export const NotUpdating: TStory = {
+    args: { hasMore: true },
+    play: async ({ canvas }) => {
+        const table = canvas.getByRole('table')
+        await expect(table.closest('[aria-busy]')).toHaveAttribute('aria-busy', 'false')
+        await expect(canvas.queryByRole('progressbar')).toBeNull()
+        await expect(canvas.getByRole('button', { name: '더 보기' })).toBeEnabled()
     },
 }

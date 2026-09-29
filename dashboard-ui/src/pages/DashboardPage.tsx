@@ -101,6 +101,7 @@ function DashboardPage() {
                         hasMore={d.hasMore}
                         isLoading={d.isLoading}
                         isLoadingMore={d.isLoadingMore}
+                        isUpdating={d.isUpdating}
                         onSelect={d.selectRow}
                         onLoadMore={d.loadMore}
                     />
