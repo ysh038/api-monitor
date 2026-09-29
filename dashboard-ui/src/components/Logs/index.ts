@@ -1,3 +1,4 @@
+export { default as DevServerNotice } from './DevServerNotice'
 export { default as FailureSummary } from './FailureSummary'
 export { default as LogDetail } from './LogDetail'
 export { default as LogFilters } from './LogFilters'

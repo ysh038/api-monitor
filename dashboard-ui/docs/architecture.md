@@ -9,7 +9,9 @@ Spring Boot 스타터 내장 대시보드(`starter/`, `/_api-monitor/`). 그래�
 (`base: './'`, `fetch('api/logs')`). API 형식은 `docs/api.md`.
 
 - `GET api/logs` (5초 폴링 `afterId`, 더 보기 `beforeId`), `GET api/logs/:id`, `GET api/services` (10초),
-  `GET api/health` (`dev === true` 면 개발 모드), `POST|DELETE api/dev/mock` (개발 모드 전용)
+  `GET api/health` (`dev === true` 면 개발 모드. Vite 개발 서버에서 연결 안 됨·운영 모드면 안내 + 5초마다 재확인),
+  `POST|DELETE api/dev/mock` (개발 모드 전용)
+- 테마: 다크 색상은 `<html data-theme="dark">` 일 때만 켜진다 (tokens.css). 개발 서버 포트는 5180 고정.
 
 ## 레이어
 
@@ -21,12 +23,14 @@ Spring Boot 스타터 내장 대시보드(`starter/`, `/_api-monitor/`). 그래�
 src/
 ├── pages/DashboardPage.tsx      유일한 화면. useDashboard 호출 + 조립
 ├── hooks/dashboard/             화면 상태 조합 (필터↔해시, 폴링, 개발 모드)
-├── hooks/shared/                useDebouncedValue, useFlashMessage
+├── hooks/shared/                useDebouncedValue, useFlashMessage, useTheme(자동/라이트/다크 → <html data-theme>)
 ├── queries/{Logs,Services,Health,DevMock}/   TanStack Query 훅 (index.ts 로만 import)
 ├── api/                         endpoints(상대경로 URL) · http(fetch 래퍼)
 ├── mappers/logMapper.ts         서버 snake_case → 도메인 타입, 형태 검증
 ├── types/log.ts                 도메인 타입
 ├── utils/logs/                  순수 계산: 트리·묶음·요약·진단·막대·흐름·해시 (단위 테스트)
+├── utils/theme/                 테마 선택 해석·저장 (index.html 첫 화면 스크립트와 같은 키·규칙)
+├── utils/devServer/             Vite 개발 서버 전용 API 연결 안내 판단 (운영 빌드에서는 항상 없음)
 ├── components/Logs/             도메인 organism (TopBar, FailureSummary, LogTable, LogDetail …)
 ├── components/layouts/          template (DashboardLayout, PanelLayout)
 ├── design-system/{atoms,molecules,organisms}/  도메인 비의존 부품 + 스토리

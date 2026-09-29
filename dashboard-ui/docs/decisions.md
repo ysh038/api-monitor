@@ -5,6 +5,21 @@
 
 ## 결정
 
+### 2026-09-29 테마 전환 · 개발 포트 고정 · API 연결 안내 (docs/specs/dashboard-dev-ux.md)
+
+#### 다크 색상은 `data-theme` 속성으로만 켠다
+- **결정**: tokens.css 의 다크 블록 조건을 `@media (prefers-color-scheme: dark)` 에서 `:root[data-theme='dark']` 로 바꿨다. "자동"이면 JS(index.html 첫 화면 스크립트 + `useTheme`)가 OS 설정을 보고 속성을 넣는다.
+- **대안**: 미디어 쿼리 블록을 두고 `[data-theme]` 덮어쓰기 블록을 하나 더 두기 / CSS `light-dark()` 로 semantic 토큰 전체 재작성.
+- **근거**: 첫 대안은 다크 토큰 35개를 두 벌 유지해야 한다. `light-dark()` 는 토큰 파일 전체를 바꿔야 해서 이번 범위에 비해 크다. 속성 방식은 다크 정의가 한 벌이고, 첫 화면 스크립트 덕분에 번쩍임도 없다. Storybook 은 preview 에서 같은 속성을 OS 설정대로 넣는다.
+
+#### 개발 포트 5180 고정 + strictPort
+- **결정**: `server.port: 5180`, `strictPort: true`.
+- **근거**: 같은 Mac 에서 다른 프로젝트(hrd-aimon-fe)의 Vite 가 5173 을 쓰고 있어, 이 프로젝트가 조용히 5174 로 뜨고 5173 에서 엉뚱한 화면을 보는 일이 있었다. 포트가 차 있으면 다른 포트로 도망가지 않고 멈추는 쪽이 헷갈리지 않는다.
+
+#### API 연결 안내는 Vite 개발 서버에서만
+- **결정**: `import.meta.env.DEV` 일 때만 health 실패(연결 불가)·`dev` 아님(운영 모드)을 안내하고, 안내가 떠 있는 동안 5초마다 health 를 다시 확인한다.
+- **근거**: 운영 빌드(Node 서버·스타터 내장)에서는 화면과 API 가 같은 서버라 "Node 서버를 켜라"는 안내가 맞지 않는다. 다시 확인하지 않으면 서버를 켠 뒤에도 새로고침 전까지 안내가 남는다.
+
 ### 2026-09-29 대시보드 React 이전 (docs/specs/dashboard-react-migration.md)
 
 #### 사이드바 제거

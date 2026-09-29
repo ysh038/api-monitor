@@ -18,6 +18,9 @@ export default defineConfig({
         outDir: 'dist',
     },
     server: {
+        // 다른 프로젝트의 Vite(기본 5173)와 겹치지 않게 고정. 이미 쓰이면 다른 포트로 가지 않고 멈춘다 (P1)
+        port: 5180,
+        strictPort: true,
         // 개발 중 API는 Node 대시보드 서버(npm run dev, :8081)로 보낸다
         proxy: {
             '/api': 'http://localhost:8081',

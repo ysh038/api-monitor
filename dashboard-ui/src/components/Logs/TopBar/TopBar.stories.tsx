@@ -15,7 +15,9 @@ const meta = {
         lastUpdatedAt: BASE_TIME,
         devMessage: null,
         isMockPending: false,
+        themePreference: 'system',
         onToggleAutoRefresh: fn(),
+        onChangeTheme: fn(),
         onInsertMock: fn(),
         onDeleteMock: fn(),
     },
@@ -65,5 +67,26 @@ export const DevModePending: TStory = {
     args: { isDev: true, isMockPending: true },
     play: async ({ canvas }) => {
         await expect(canvas.getByRole('button', { name: 'Mock 데이터 넣기' })).toBeDisabled()
+    },
+}
+
+/** T7: 화면 테마 — 현재 선택이 눌린 상태, 누르면 선택이 바뀐다 */
+export const ThemeSelect: TStory = {
+    args: { themePreference: 'system' },
+    play: async ({ canvas, userEvent, args }) => {
+        const group = canvas.getByRole('group', { name: '화면 테마' })
+        await expect(group).toBeVisible()
+        await expect(canvas.getByRole('button', { name: '자동' })).toHaveAttribute('aria-pressed', 'true')
+        await expect(canvas.getByRole('button', { name: '다크' })).toHaveAttribute('aria-pressed', 'false')
+        await userEvent.click(canvas.getByRole('button', { name: '다크' }))
+        await expect(args.onChangeTheme).toHaveBeenCalledWith('dark')
+    },
+}
+
+export const ThemeDark: TStory = {
+    args: { themePreference: 'dark' },
+    play: async ({ canvas }) => {
+        await expect(canvas.getByRole('button', { name: '다크' })).toHaveAttribute('aria-pressed', 'true')
+        await expect(canvas.getByRole('button', { name: '라이트' })).toHaveAttribute('aria-pressed', 'false')
     },
 }

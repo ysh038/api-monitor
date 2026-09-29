@@ -1,0 +1,11 @@
+.wrap {
+    display: block;
+}
+
+.command {
+    padding: 0 var(--space-1);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+}

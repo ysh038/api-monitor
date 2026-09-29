@@ -1,6 +1,7 @@
 import DashboardLayout from '../components/layouts/DashboardLayout'
 import PanelLayout from '../components/layouts/PanelLayout'
 import {
+    DevServerNotice,
     FailureSummary,
     LogDetail,
     LogFilters,
@@ -27,11 +28,14 @@ function DashboardPage() {
                     lastUpdatedAt={d.lastUpdatedAt}
                     devMessage={d.devMessage}
                     isMockPending={d.isMockPending}
+                    themePreference={d.themePreference}
                     onToggleAutoRefresh={d.setAutoRefresh}
+                    onChangeTheme={d.setThemePreference}
                     onInsertMock={d.insertMock}
                     onDeleteMock={d.deleteMock}
                 />
             }
+            notice={d.devServerNotice ? <DevServerNotice notice={d.devServerNotice} /> : undefined}
             summary={
                 <FailureSummary
                     rows={d.rows}

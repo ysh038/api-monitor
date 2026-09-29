@@ -25,7 +25,7 @@
 cd ../server && npm ci && npm run dev        # http://localhost:8081
 
 # 터미널 2: 이 폴더
-npm ci && npm run dev                         # http://localhost:5173 (/api 는 8081로 프록시)
+npm ci && npm run dev                         # http://localhost:5180 (포트 고정, /api 는 8081로 프록시)
 ```
 
 `npm run dev`로 띄운 Node 서버는 개발 모드라서, `/api/health`가 `dev: true`를 돌려주고 Mock API가 켜집니다. 화면 상단 **Mock 데이터 추가** 버튼(아래 "개발 모드" 참고)으로 모든 표시 경우를 채울 수 있습니다.

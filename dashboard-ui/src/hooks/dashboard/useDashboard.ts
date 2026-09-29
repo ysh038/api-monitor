@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useDevMockMutations } from '../../queries/DevMock'
-import { useIsDevServer } from '../../queries/Health'
+import { useServerHealth } from '../../queries/Health'
 import { useLogDetailQuery, useLogFeedQuery } from '../../queries/Logs'
 import { useServicesQuery } from '../../queries/Services'
 import type { ILogFilters, TLogKind, TStatusFilter } from '../../types/log'
@@ -24,7 +24,8 @@ import {
     toggleStatus,
 } from '../../utils/logs/filterState'
 import { buildServiceOptions, getScopeTotal } from '../../utils/logs/serviceOptions'
-import { useDebouncedValue, useFlashMessage } from '../shared'
+import { getDevServerNotice } from '../../utils/devServer'
+import { useDebouncedValue, useFlashMessage, useTheme } from '../shared'
 
 import { useHashState } from './useHashState'
 
@@ -61,8 +62,16 @@ export function useDashboard() {
     const feed = useLogFeedQuery(filters)
     const services = useServicesQuery()
     const detailQuery = useLogDetailQuery(selectedId)
-    const isDev = useIsDevServer()
+    const health = useServerHealth()
+    const isDev = health.isDev
     const mock = useDevMockMutations()
+    // Vite 개발 서버에서만: API 서버가 꺼져 있거나 운영 모드면 안내 (운영 빌드에서는 항상 null)
+    const devServerNotice = getDevServerNotice({
+        isViteDev: import.meta.env.DEV,
+        healthStatus: health.status,
+        isDev,
+    })
+    const theme = useTheme()
 
     useEffect(() => {
         document.title = getDocumentTitle(isDev)
@@ -126,6 +135,9 @@ export function useDashboard() {
     return {
         // 상단 바
         isDev,
+        devServerNotice,
+        themePreference: theme.preference,
+        setThemePreference: theme.setPreference,
         isAutoRefresh,
         setAutoRefresh,
         lastUpdatedAt,

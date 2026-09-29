@@ -1,7 +1,10 @@
 import Badge from '../../../design-system/atoms/Badge'
 import Button from '../../../design-system/atoms/Button'
+import SegmentedControl from '../../../design-system/atoms/SegmentedControl'
 import Switch from '../../../design-system/atoms/Switch'
 import { formatTime } from '../../../utils/logs/format'
+import { THEME_OPTIONS } from '../../../utils/theme'
+import type { TThemePreference } from '../../../utils/theme'
 
 import styles from './TopBar.module.css'
 
@@ -14,7 +17,10 @@ export interface ITopBarProps {
     /** Mock 추가·삭제 결과 (2.5초 표시) */
     devMessage: string | null
     isMockPending: boolean
+    /** 화면 테마 선택 (자동 = OS 설정) */
+    themePreference: TThemePreference
     onToggleAutoRefresh: (isOn: boolean) => void
+    onChangeTheme: (preference: TThemePreference) => void
     onInsertMock: () => void
     onDeleteMock: () => void
 }
@@ -25,7 +31,9 @@ function TopBar({
     lastUpdatedAt,
     devMessage,
     isMockPending,
+    themePreference,
     onToggleAutoRefresh,
+    onChangeTheme,
     onInsertMock,
     onDeleteMock,
 }: ITopBarProps) {
@@ -51,6 +59,12 @@ function TopBar({
                     </span>
                 ) : null}
                 <Switch label="5초마다 새로고침" isChecked={isAutoRefresh} onChange={onToggleAutoRefresh} />
+                <SegmentedControl
+                    label="화면 테마"
+                    options={THEME_OPTIONS}
+                    value={themePreference}
+                    onChange={onChangeTheme}
+                />
                 {isDev ? (
                     <>
                         <span className={styles.divider} aria-hidden="true" />

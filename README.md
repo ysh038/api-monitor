@@ -228,7 +228,7 @@ cd starter
 화면 개발:
 ```bash
 cd server && npm ci && npm run dev          # API + Mock 데이터 (http://localhost:8081)
-cd dashboard-ui && npm ci && npm run dev    # 화면 (http://localhost:5173, /api 는 8081로 프록시)
+cd dashboard-ui && npm ci && npm run dev    # 화면 (http://localhost:5180, /api 는 8081로 프록시)
 ```
 자세한 내용은 [dashboard-ui/README.md](dashboard-ui/README.md)를 참고하세요.
 
