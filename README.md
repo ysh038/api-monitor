@@ -171,7 +171,7 @@ api-monitor:
 
 ```bash
 git clone https://github.com/ysh038/api-monitor.git && cd api-monitor
-docker build -t api-monitor-server:1.0.0 server
+docker build -f server/Dockerfile -t api-monitor-server:1.0.0 .   # 저장소 루트에서 (화면 빌드 포함)
 ./deploy/install-dashboard.sh          # http://<서버IP>:8090 (재부팅 시 자동 시작, 30일 보관)
 ```
 
@@ -183,7 +183,7 @@ docker build -t api-monitor-server:1.0.0 server
 - 서버 설정(환경변수): `RETENTION_DAYS`(30), `INGEST_API_KEY`(비어 있으면 인증 없음)
 - 폐쇄망 반입:
   ```bash
-  docker buildx build --platform linux/amd64 -t api-monitor-server:1.0.0 --load server
+  docker buildx build --platform linux/amd64 -f server/Dockerfile -t api-monitor-server:1.0.0 --load .
   docker save api-monitor-server:1.0.0 | gzip > deploy/api-monitor-server-1.0.0.tar.gz
   ```
   `deploy/` 폴더째 반입한 뒤 `./install-dashboard.sh`를 실행합니다.
@@ -218,12 +218,19 @@ open http://localhost:9999/_api-monitor
 
 ```bash
 cd starter
-./gradlew build                      # JDK 21 필요 (JDK가 없으면 ./build.sh 가 Docker로 빌드)
+./gradlew build                      # JDK 21 + Node 22 필요 (없으면 ./build.sh 가 Docker로 빌드)
 ./gradlew publishToMavenLocal        # 로컬 테스트
 ./gradlew publishToMavenCentral      # Maven Central (~/.gradle/gradle.properties에 토큰·서명 키 필요)
 ```
 
-내장 대시보드 화면은 `server/public`의 파일을 빌드할 때 jar에 넣습니다. 별도 대시보드와 같은 화면입니다.
+대시보드 화면은 `dashboard-ui/`(React + Vite)입니다. 스타터를 빌드하면 `dashboard-ui`에서 `npm ci && npm run build`가 먼저 실행되고, 그 결과(`dist/`)가 jar에 들어갑니다. 별도 대시보드 서버(Node)도 같은 빌드 결과를 서빙합니다. 스타터를 **쓰는** 앱에는 Node가 필요 없습니다.
+
+화면 개발:
+```bash
+cd server && npm ci && npm run dev          # API + Mock 데이터 (http://localhost:8081)
+cd dashboard-ui && npm ci && npm run dev    # 화면 (http://localhost:5173, /api 는 8081로 프록시)
+```
+자세한 내용은 [dashboard-ui/README.md](dashboard-ui/README.md)를 참고하세요.
 
 ## License
 

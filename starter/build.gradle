@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'io.github.ysh038'
-version = '1.1.0'
+version = '1.2.0-SNAPSHOT'
 
 java {
     // Spring Boot 3.x/4.x 모두 Java 17 이상이므로 17 바이트코드로 빌드한다.
@@ -26,9 +26,42 @@ repositories {
     mavenCentral()
 }
 
-// 내장 대시보드 화면: 별도 대시보드 서버와 같은 파일(server/public)을 jar 에 넣는다
+// 내장 대시보드 화면: dashboard-ui(React) 빌드 결과(dist/)를 jar 에 넣는다.
+// 스타터를 쓰는 앱은 Node 가 필요 없다. Node 는 스타터를 빌드·배포하는 쪽에서만 필요하다.
+// -PskipDashboardBuild : npm 빌드를 건너뛰고 이미 있는 dashboard-ui/dist 를 그대로 쓴다 (build.sh 등)
+def dashboardDir = rootProject.file('../dashboard-ui')
+def dashboardDist = new File(dashboardDir, 'dist')
+def npmCommand = System.getProperty('os.name').toLowerCase().contains('windows') ? 'npm.cmd' : 'npm'
+
+tasks.register('npmCiDashboard', Exec) {
+    onlyIf { !project.hasProperty('skipDashboardBuild') }
+    workingDir dashboardDir
+    commandLine npmCommand, 'ci', '--no-audit', '--no-fund'
+    inputs.file(new File(dashboardDir, 'package-lock.json'))
+    outputs.dir(new File(dashboardDir, 'node_modules'))
+}
+
+tasks.register('buildDashboard', Exec) {
+    onlyIf { !project.hasProperty('skipDashboardBuild') }
+    dependsOn 'npmCiDashboard'
+    workingDir dashboardDir
+    commandLine npmCommand, 'run', 'build'
+    inputs.dir(new File(dashboardDir, 'src'))
+    inputs.files(new File(dashboardDir, 'index.html'), new File(dashboardDir, 'package.json'), new File(dashboardDir, 'vite.config.ts'))
+    inputs.dir(new File(dashboardDir, 'public'))
+    outputs.dir(dashboardDist)
+}
+
 tasks.named('processResources') {
-    from(rootProject.file('../server/public')) {
+    dependsOn 'buildDashboard'
+    inputs.dir(dashboardDist).optional()
+    doFirst {
+        if (!new File(dashboardDist, 'index.html').isFile()) {
+            throw new GradleException("대시보드 화면이 없습니다: ${dashboardDist}/index.html\n" +
+                    "dashboard-ui 에서 'npm ci && npm run build' 를 먼저 실행하세요.")
+        }
+    }
+    from(dashboardDist) {
         into 'META-INF/api-monitor/dashboard'
     }
 }
@@ -44,6 +77,18 @@ dependencies {
     compileOnly 'jakarta.servlet:jakarta.servlet-api'
     compileOnly 'org.slf4j:slf4j-api'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    // 테스트 전용 (배포 jar·POM 의존성에는 포함되지 않음)
+    testImplementation platform('org.springframework.boot:spring-boot-dependencies:4.0.5')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.springframework:spring-webmvc'
+    testImplementation 'jakarta.servlet:jakarta.servlet-api'
+    testImplementation 'org.slf4j:slf4j-api'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
 }
 
 // Maven Central (Central Portal) 배포

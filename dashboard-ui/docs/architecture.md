@@ -6,7 +6,7 @@
 
 API Monitor 대시보드. 빌드 결과(`dist/`)를 두 곳이 서빙한다 — Node 대시보드 서버(`server/`, `/`)와
 Spring Boot 스타터 내장 대시보드(`starter/`, `/_api-monitor/`). 그래서 API·에셋 경로는 전부 상대경로다
-(`base: './'`, `fetch('api/logs')`). API 형식은 `MIGRATION.md` 의 "API" 절.
+(`base: './'`, `fetch('api/logs')`). API 형식은 `docs/api.md`.
 
 - `GET api/logs` (5초 폴링 `afterId`, 더 보기 `beforeId`), `GET api/logs/:id`, `GET api/services` (10초),
   `GET api/health` (`dev === true` 면 개발 모드), `POST|DELETE api/dev/mock` (개발 모드 전용)

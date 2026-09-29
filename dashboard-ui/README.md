@@ -9,4 +9,4 @@ npm run build    # dist/
 npm run lint
 ```
 
-진행 중인 React 이전 작업은 [MIGRATION.md](MIGRATION.md)를 참고하세요.
+API 형식과 배포 제약은 [docs/api.md](docs/api.md)를 참고하세요.
