@@ -28,7 +28,7 @@ export const WithFailures: TStory = {
         ).toBeVisible()
         await expect(
             canvas.getByText(
-                '실패한 5건 중 4건은 외부 서버 호출과 관련 있어요. 서버를 눌러 좁혀 볼 수 있어요.',
+                '실패한 5건 중 4건은 외부 서버 호출과 관련 있어요. 서버를 눌러 좁혀 볼 수 있어요. 4xx로 거부된 요청도 3건 있어요.',
             ),
         ).toBeVisible()
         // D4
@@ -47,12 +47,38 @@ export const HostSelected: TStory = {
     },
 }
 
-/** D3: 실패가 없으면 호스트 카드도 없다 */
+/** D3: 실패도 거부도 없어야 모두 정상. 호스트 카드도 없다 */
 export const AllGood: TStory = {
-    args: { rows: [makeRow(), makeRow(), makeRow({ statusCode: 404 })] },
+    args: { rows: [makeRow(), makeRow(), makeRow({ statusCode: 302 })] },
     play: async ({ canvas }) => {
         await expect(
             canvas.getByRole('heading', { name: '요청 3건 모두 정상 처리했어요' }),
+        ).toBeVisible()
+        await expect(canvas.queryByRole('button')).toBeNull()
+    },
+}
+
+/** D3a: 5xx 없이 401 로그인 실패만 있으면 "모두 정상"이 아니라 거부로 알린다 */
+export const OnlyRejected: TStory = {
+    args: {
+        rows: [
+            makeRow({ path: '/api/v1/orders' }),
+            makeRow({
+                method: 'POST',
+                path: '/api/v1/auth/login',
+                statusCode: 401,
+                exceptionClass: 'com.example.auth.LoginFailedException',
+            }),
+        ],
+    },
+    play: async ({ canvas }) => {
+        await expect(
+            canvas.getByRole('heading', { name: '요청 2건 중 1건이 4xx로 거부됐어요' }),
+        ).toBeVisible()
+        await expect(
+            canvas.getByText(
+                '서버 오류(5xx·응답 없음)는 없어요. 거부된 요청을 누르면 이유를 볼 수 있어요.',
+            ),
         ).toBeVisible()
         await expect(canvas.queryByRole('button')).toBeNull()
     },

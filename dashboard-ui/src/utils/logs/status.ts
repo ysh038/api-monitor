@@ -60,6 +60,10 @@ export function getStatusText(code: number | null): string {
 export const isFailure = (row: ILogRow) =>
     row.statusCode === null || row.statusCode >= 500
 
+/** 거부 = 4xx (실패로 세지 않지만 요약에서 따로 알린다) */
+export const isRejected = (row: ILogRow) =>
+    row.statusCode !== null && row.statusCode >= 400 && row.statusCode < 500
+
 /** 정상 = 2xx·3xx 이고 예외 없음 */
 export const isSuccessRow = (row: ILogRow) =>
     row.statusCode !== null && row.statusCode < 400 && !row.exceptionClass
