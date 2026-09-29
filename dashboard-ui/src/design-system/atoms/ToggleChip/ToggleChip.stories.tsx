@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { useState } from 'react'
 import { expect, fn } from 'storybook/test'
 
 import ToggleChip from './ToggleChip'
@@ -44,4 +45,23 @@ export const StatusChips: TStory = {
             />
         </>
     ),
+}
+
+/** M4·L6: 켜고 끌 때 색이 부드럽게 바뀌고, 굵어져도 폭이 그대로다 */
+export const SmoothToggle: TStory = {
+    render: function Render(args) {
+        const [isPressed, setPressed] = useState(false)
+        return <ToggleChip {...args} isPressed={isPressed} onToggle={() => setPressed((v) => !v)} />
+    },
+    play: async ({ canvas, userEvent }) => {
+        const chip = canvas.getByRole('button', { name: '5xx' })
+        const transition = getComputedStyle(chip).transitionProperty
+        for (const property of ['background-color', 'border-color', 'color']) {
+            await expect(transition).toContain(property)
+        }
+        const widthOff = chip.getBoundingClientRect().width
+        await userEvent.click(chip)
+        await expect(chip).toHaveAttribute('aria-pressed', 'true')
+        await expect(chip.getBoundingClientRect().width).toBe(widthOff)
+    },
 }

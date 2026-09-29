@@ -20,7 +20,9 @@ function ToggleChip({ label, tone, isPressed, onToggle, title }: IToggleChipProp
             onClick={onToggle}
         >
             <span className={styles.dot} aria-hidden="true" />
-            {label}
+            <span className={styles.label} data-label={label}>
+                {label}
+            </span>
         </button>
     )
 }

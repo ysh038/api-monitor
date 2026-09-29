@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { expect, fn } from 'storybook/test'
+import { expect, fn, within } from 'storybook/test'
 
 import { BASE_TIME } from '../../../mocks/logFixtures'
 
@@ -88,5 +88,39 @@ export const ThemeDark: TStory = {
     play: async ({ canvas }) => {
         await expect(canvas.getByRole('button', { name: '다크' })).toHaveAttribute('aria-pressed', 'true')
         await expect(canvas.getByRole('button', { name: '라이트' })).toHaveAttribute('aria-pressed', 'false')
+    },
+}
+
+/** L5: Mock 결과 메시지가 나타나도 다른 버튼 위치가 그대로다 */
+export const DevMessageNoShift: TStory = {
+    // 비교하려고 상단 바(header 랜드마크)를 두 개 그리므로 중복 랜드마크 규칙만 이 스토리에서 끈다
+    parameters: {
+        a11y: {
+            config: {
+                rules: [
+                    { id: 'landmark-no-duplicate-banner', enabled: false },
+                    { id: 'landmark-unique', enabled: false },
+                ],
+            },
+        },
+    },
+    render: (args) => (
+        <div style={{ width: 1280 }}>
+            <div data-testid="without">
+                <TopBar {...args} isDev devMessage={null} />
+            </div>
+            <div data-testid="with">
+                <TopBar {...args} isDev devMessage="Mock 데이터를 넣지 못했어요" />
+            </div>
+        </div>
+    ),
+    play: async ({ canvas }) => {
+        const leftOf = (testId: string, name: string) =>
+            Math.round(
+                within(canvas.getByTestId(testId)).getByRole('button', { name }).getBoundingClientRect().left,
+            )
+        for (const name of ['다크', 'Mock 데이터 넣기', 'Mock 데이터 지우기']) {
+            await expect(leftOf('with', name)).toBe(leftOf('without', name))
+        }
     },
 }

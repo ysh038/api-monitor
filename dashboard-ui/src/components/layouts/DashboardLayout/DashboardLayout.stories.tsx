@@ -28,3 +28,10 @@ export const Slots: TStory = {
         }
     },
 }
+
+/** L4: 세로 스크롤바 자리를 항상 확보해서 스크롤바가 생기고 사라져도 가로 위치가 그대로다 */
+export const StableScrollbarGutter: TStory = {
+    play: async () => {
+        await expect(getComputedStyle(document.documentElement).scrollbarGutter).toBe('stable')
+    },
+}

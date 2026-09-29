@@ -12,8 +12,24 @@
     white-space: nowrap;
     cursor: pointer;
     transition:
-        background-color var(--duration-fast) var(--easing-standard),
-        border-color var(--duration-fast) var(--easing-standard);
+        background-color var(--duration-base) var(--easing-standard),
+        border-color var(--duration-base) var(--easing-standard),
+        color var(--duration-base) var(--easing-standard);
+}
+
+/* 굵은 글자 폭을 미리 잡아 둔다 — 켜져서 굵어져도 칩 폭이 그대로다 (dashboard-stable-layout L6) */
+.label {
+    display: inline-flex;
+    flex-direction: column;
+}
+
+.label::after {
+    content: attr(data-label);
+    height: 0;
+    overflow: hidden;
+    font-weight: var(--font-weight-semibold);
+    visibility: hidden;
+    user-select: none;
 }
 
 .chip:hover {
@@ -33,6 +49,7 @@
 }
 
 .dot {
+    flex: none;
     width: 7px;
     height: 7px;
     border-radius: var(--radius-full);

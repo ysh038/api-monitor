@@ -34,9 +34,30 @@ export const Selected: TStory = {
     args: { selectedId: rows[3].id },
 }
 
+/** L8: 결과가 0건이어도 틀을 유지한다 (요구사항 변경: 예전에는 아무것도 그리지 않았다) */
 export const Empty: TStory = {
     args: { rows: [] },
+    play: async ({ canvas, canvasElement }) => {
+        await expect(canvas.getByRole('heading', { name: '시간대별 요청' })).toBeVisible()
+        await expect(canvasElement.querySelectorAll('[data-bar-id]')).toHaveLength(0)
+    },
+}
+
+/** L8: 막대가 있을 때와 0건일 때 높이가 같다 */
+export const StableHeight: TStory = {
+    render: (args) => (
+        <div style={{ display: 'grid', gap: 24, width: 900 }}>
+            <div data-testid="with-bars">
+                <RequestTimeline {...args} />
+            </div>
+            <div data-testid="empty">
+                <RequestTimeline {...args} rows={[]} />
+            </div>
+        </div>
+    ),
     play: async ({ canvas }) => {
-        await expect(canvas.queryByRole('heading')).toBeNull()
+        const heightOf = (id: string) => Math.round(canvas.getByTestId(id).getBoundingClientRect().height)
+        await expect(heightOf('with-bars')).toBeGreaterThan(40)
+        await expect(heightOf('empty')).toBe(heightOf('with-bars'))
     },
 }

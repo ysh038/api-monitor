@@ -23,7 +23,7 @@ const xVar = (x: number) => ({ '--x': x }) as CSSProperties
 function RequestTimeline({ rows, selectedId, onSelect }: IRequestTimelineProps) {
     const { bars, ticks } = useMemo(() => buildTimeline(rows), [rows])
     const rowById = useMemo(() => new Map(rows.map((row) => [row.id, row])), [rows])
-    if (bars.length === 0) return null
+    // 결과가 0건이어도 틀(제목·빈 막대 영역·축)을 그대로 둔다 — 아래 목록이 올라오지 않게 (dashboard-stable-layout L8)
 
     return (
         <div className={styles.timeline}>

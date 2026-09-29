@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, fn } from 'storybook/test'
 
-import { makeRow, makeScenario } from '../../../mocks/logFixtures'
+import { makeOutbound, makeRow, makeScenario } from '../../../mocks/logFixtures'
 
 import FailureSummary from './FailureSummary'
 
@@ -88,5 +88,57 @@ export const Empty: TStory = {
     args: { rows: [] },
     play: async ({ canvas }) => {
         await expect(canvas.getByRole('heading', { name: '아직 받은 요청이 없어요' })).toBeVisible()
+    },
+}
+
+const heightOf = (el: Element | null) => Math.round(el?.getBoundingClientRect().height ?? -1)
+const MANY_FAILED_HOSTS = Array.from({ length: 10 }, (_, i) =>
+    makeOutbound(null, { id: 900 + i, targetHost: `partner-${i}.example:9000`, statusCode: 500 }),
+)
+
+/** L1·L3: 카드 있음 / 카드 없음 / 0건 / 카드 10개 — 요약 높이가 모두 같다 */
+export const StableHeight: TStory = {
+    render: (args) => (
+        <div style={{ display: 'grid', gap: 24, width: 900 }}>
+            <div data-testid="with-hosts">
+                <FailureSummary {...args} rows={makeScenario()} />
+            </div>
+            <div data-testid="no-hosts">
+                <FailureSummary {...args} rows={[makeRow({ statusCode: 200 })]} />
+            </div>
+            <div data-testid="empty">
+                <FailureSummary {...args} rows={[]} hasFilter />
+            </div>
+            <div data-testid="many-hosts">
+                <FailureSummary {...args} rows={MANY_FAILED_HOSTS} />
+            </div>
+        </div>
+    ),
+    play: async ({ canvas }) => {
+        const base = heightOf(canvas.getByTestId('with-hosts'))
+        await expect(base).toBeGreaterThan(100)
+        await expect(heightOf(canvas.getByTestId('no-hosts'))).toBe(base)
+        await expect(heightOf(canvas.getByTestId('empty'))).toBe(base)
+        await expect(heightOf(canvas.getByTestId('many-hosts'))).toBe(base)
+    },
+}
+
+/** L2·L7: 제목·설명은 한 줄 고정(넘치면 말줄임 + title), 숫자는 고정폭 */
+export const NarrowOneLine: TStory = {
+    render: (args) => (
+        <div style={{ width: 240 }}>
+            <FailureSummary {...args} rows={makeScenario()} />
+        </div>
+    ),
+    play: async ({ canvas }) => {
+        const headline = canvas.getByRole('heading', { level: 1 })
+        await expect(headline).toHaveAttribute('title', '요청 14건 중 5건이 실패했어요')
+        const headlineStyle = getComputedStyle(headline)
+        await expect(headlineStyle.whiteSpace).toBe('nowrap')
+        await expect(headlineStyle.textOverflow).toBe('ellipsis')
+        await expect(headlineStyle.fontVariantNumeric).toContain('tabular-nums')
+        const description = canvas.getByText(/실패한 5건 중 4건은/)
+        await expect(description).toHaveAttribute('title')
+        await expect(getComputedStyle(description).whiteSpace).toBe('nowrap')
     },
 }

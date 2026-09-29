@@ -4,8 +4,16 @@
     gap: var(--space-2);
 }
 
-.headline {
+.headline,
+.description {
     margin: 0;
+    overflow: hidden;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.headline {
     color: var(--color-text);
     font-size: var(--font-size-2xl);
     font-weight: var(--font-weight-bold);
@@ -13,14 +21,30 @@
 }
 
 .description {
-    margin: 0;
     color: var(--color-text-muted);
     font-size: var(--font-size-lg);
 }
 
+/*
+ * 카드 줄은 한 줄 고정 + 넘치면 가로 스크롤, 카드가 없어도 카드 한 장 높이를 유지한다.
+ * 높이 = StatCard 의 위아래 여백 + 테두리 + 두 줄(제목 sm · 설명 md) 글자 높이 (StatCard.module.css 와 맞춘다)
+ */
 .hosts {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    align-items: stretch;
     gap: var(--space-3);
+    min-height: calc(
+        var(--space-3) * 2 + 2px + var(--space-1) + (var(--font-size-sm) + var(--font-size-md)) * var(--line-height-base)
+    );
     margin-top: var(--space-3);
+    overflow: auto hidden;
+}
+
+.noHosts {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-md);
 }

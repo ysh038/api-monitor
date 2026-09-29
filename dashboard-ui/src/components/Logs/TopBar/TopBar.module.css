@@ -60,7 +60,9 @@
 }
 
 .devMessage {
-    min-width: 0;
+    /* 메시지가 나타나고 사라져도 옆 버튼이 밀리지 않게 가장 긴 문구 폭을 미리 잡아 둔다 (dashboard-stable-layout L5) */
+    min-width: 14em;
+    white-space: nowrap;
     color: var(--color-warning-strong);
     font-size: var(--font-size-sm);
 }
