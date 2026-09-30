@@ -241,3 +241,30 @@ export const AccordionAnimation: TStory = {
         await expect(Math.round(topOf(below))).toBe(Math.round(topClosed))
     },
 }
+
+/** C5c: 묶음 줄·펼친 행은 일반 행과 높이가 같고, 한 행의 아래 테두리가 모든 칸에서 한 줄로 이어진다 */
+export const GroupRowsAlign: TStory = {
+    play: async ({ canvas, canvasElement, userEvent }) => {
+        const [toggle] = canvas.getAllByRole('button', { name: '정상 처리한 요청 2건' })
+        const summary = toggle.closest('tr')
+        const regular = canvas.getByText('/api/v1/risk-scores').closest('tr')
+        await userEvent.click(toggle)
+        await sleep(450)
+        const grouped = [...canvasElement.querySelectorAll('tr[data-grouped="true"]')]
+        const regularHeight = heightOf(regular)
+        await expect(Math.abs(heightOf(summary) - regularHeight)).toBeLessThanOrEqual(0.5)
+        for (const row of grouped) {
+            await expect(Math.abs(heightOf(row) - regularHeight)).toBeLessThanOrEqual(0.5)
+            // 칸마다 제 내용 높이에 테두리를 그리면 단차가 생긴다 — 칸 안쪽 요소에는 보이는 아래 선이 없다
+            // (배지의 투명 테두리처럼 보이지 않는 선은 제외)
+            for (const inner of row.querySelectorAll('td *')) {
+                const style = getComputedStyle(inner)
+                const isVisibleLine =
+                    style.borderBottomStyle !== 'none' &&
+                    style.borderBottomWidth !== '0px' &&
+                    style.borderBottomColor !== 'rgba(0, 0, 0, 0)'
+                await expect(isVisibleLine).toBe(false)
+            }
+        }
+    },
+}

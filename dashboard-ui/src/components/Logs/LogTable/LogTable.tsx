@@ -1,5 +1,6 @@
 import { Fragment, useMemo } from 'react'
 
+import Badge from '../../../design-system/atoms/Badge'
 import Button from '../../../design-system/atoms/Button'
 import EmptyState from '../../../design-system/atoms/EmptyState'
 import type { ILogRow } from '../../../types/log'
@@ -142,7 +143,10 @@ function LogTable({
                                             <span className={styles.groupChevron} aria-hidden="true">
                                                 ›
                                             </span>
-                                            2xx
+                                            {/* 일반 행의 상태 칸과 같은 배지 — 행 높이가 같아진다 (spec C5c) */}
+                                            <Badge appearance="text" tone="neutral">
+                                                2xx
+                                            </Badge>
                                         </button>
                                     </td>
                                     <td className={`${styles.service} ${styles.hideNarrow}`} title={service || undefined}>
