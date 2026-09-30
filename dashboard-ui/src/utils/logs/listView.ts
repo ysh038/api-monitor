@@ -14,12 +14,6 @@ export type TListItem =
           type: 'group'
           key: string
           nodes: ILogNode[]
-          /** 중복 없는 경로 (등장 순) */
-          paths: string[]
-          /** 가장 오래된 시각 */
-          from: number
-          /** 가장 최신 시각 */
-          to: number
       }
 
 /** 부모 요청을 찾는 키. requestId 는 서비스 간에 전파될 수 있어 서비스 이름과 같이 쓴다 */
@@ -67,9 +61,6 @@ function toGroup(run: ILogNode[]): TListItem {
         // 폴링으로 위에 새 행이 붙어도 key 가 유지되도록 가장 오래된 행 기준
         key: `group-${oldest.row.id}`,
         nodes: run,
-        paths: [...new Set(run.map((n) => n.row.path))],
-        from: oldest.row.createdAt,
-        to: run[0].row.createdAt,
     }
 }
 

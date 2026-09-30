@@ -65,10 +65,9 @@ describe('buildListItems (C2~C4)', () => {
         expect(items.map((i) => i.type)).toEqual(['group', 'node'])
         const group = items[0]
         if (group.type !== 'group') throw new Error('group 이어야 한다')
-        expect(group.nodes).toHaveLength(3)
-        expect(group.paths).toEqual(['/a', '/b'])
-        expect(group.from).toBe(c.createdAt)
-        expect(group.to).toBe(a.createdAt)
+        expect(group.nodes.map((n) => n.row.id)).toEqual([a.id, b.id, c.id])
+        // 경로 목록·시각 범위는 화면에서 빠지면서 묶음 데이터에서도 뺐다 (C2, 2026-09-30)
+        expect(Object.keys(group).sort()).toEqual(['key', 'nodes', 'type'])
     })
 
     it('C2: 정상 항목이 하나뿐이면 묶지 않는다', () => {

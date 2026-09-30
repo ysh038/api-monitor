@@ -41,16 +41,26 @@ export const Scenario: TStory = {
     },
 }
 
-/** C5: 펼치기 → 묶였던 행이 보이고 접기로 바뀐다 */
+/** C5: 묶음 줄은 건수만 — 줄 전체를 누르면 펼쳐지고, 펼친 행은 세로선으로 묶음 표시 */
 export const ExpandGroup: TStory = {
-    play: async ({ canvas, userEvent }) => {
+    play: async ({ canvas, canvasElement, userEvent }) => {
+        const [group] = canvas.getAllByRole('button', { name: '정상 처리한 요청 2건' })
+        await expect(group).toHaveAttribute('aria-expanded', 'false')
+        // 접힌 줄에는 경로·시각 범위가 없다
         await expect(canvas.queryByText('/api/v1/receipts/f1')).toBeNull()
-        const [expand] = canvas.getAllByRole('button', { name: /펼치기/ })
-        await expect(expand).toHaveAttribute('aria-expanded', 'false')
-        await userEvent.click(expand)
+        await expect(canvas.queryByText(/\d{2}:\d{2}:\d{2} – \d{2}:\d{2}:\d{2}/)).toBeNull()
+        await expect(canvasElement.querySelectorAll('[data-grouped="true"]')).toHaveLength(0)
+
+        await userEvent.click(group)
+        await expect(group).toHaveAttribute('aria-expanded', 'true')
         await expect(canvas.getByText('/api/v1/receipts/f1')).toBeVisible()
-        const collapse = canvas.getByRole('button', { name: /접기/ })
-        await expect(collapse).toHaveAttribute('aria-expanded', 'true')
+        await expect(canvasElement.querySelectorAll('[data-grouped="true"]')).toHaveLength(2)
+
+        // 키보드로 다시 접기
+        group.focus()
+        await userEvent.keyboard('{Enter}')
+        await expect(group).toHaveAttribute('aria-expanded', 'false')
+        await expect(canvas.queryByText('/api/v1/receipts/f1')).toBeNull()
     },
 }
 

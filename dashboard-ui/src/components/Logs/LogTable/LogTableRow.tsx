@@ -24,6 +24,8 @@ export interface ILogTableRowProps {
     isChildCountShown: boolean
     isSelected: boolean
     isNew: boolean
+    /** 펼친 정상 요청 묶음 안의 행 (왼쪽 세로선) */
+    isInGroup?: boolean
     onSelect: (id: number) => void
 }
 
@@ -34,6 +36,7 @@ function LogTableRow({
     isChildCountShown,
     isSelected,
     isNew,
+    isInGroup = false,
     onSelect,
 }: ILogTableRowProps) {
     const durationTone = getDurationTone(row.durationMs)
@@ -56,6 +59,7 @@ function LogTableRow({
             tabIndex={0}
             aria-current={isSelected ? 'true' : undefined}
             data-new={isNew ? 'true' : undefined}
+            data-grouped={isInGroup ? 'true' : undefined}
             onClick={() => onSelect(row.id)}
             onKeyDown={onKeyDown}
         >

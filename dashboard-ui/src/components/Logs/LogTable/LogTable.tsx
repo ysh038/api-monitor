@@ -3,7 +3,6 @@ import { Fragment, useMemo, useState } from 'react'
 import Button from '../../../design-system/atoms/Button'
 import EmptyState from '../../../design-system/atoms/EmptyState'
 import type { ILogRow } from '../../../types/log'
-import { formatTime } from '../../../utils/logs/format'
 import { buildListItems, buildLogTree, type ILogNode } from '../../../utils/logs/listView'
 
 import styles from './LogTable.module.css'
@@ -26,8 +25,6 @@ export interface ILogTableProps {
 }
 
 const COLUMN_COUNT = 7
-
-const clock = (ms: number) => formatTime(ms, Date.now(), { isWithMs: false })
 
 /** 요청 기록 표: 외부 호출 트리 · 정상 요청 묶음 · 시간 공백 */
 function LogTable({
@@ -56,7 +53,7 @@ function LogTable({
             return next
         })
 
-    const renderNode = ({ row, children }: ILogNode) => (
+    const renderNode = ({ row, children }: ILogNode, isInGroup = false) => (
         <Fragment key={row.id}>
             <LogTableRow
                 row={row}
@@ -64,6 +61,7 @@ function LogTable({
                 isChildCountShown={children.length === 0}
                 isSelected={row.id === selectedId}
                 isNew={newIds.has(row.id)}
+                isInGroup={isInGroup}
                 onSelect={onSelect}
             />
             {children.map((child) => (
@@ -74,6 +72,7 @@ function LogTable({
                     isChildCountShown={false}
                     isSelected={child.id === selectedId}
                     isNew={newIds.has(child.id)}
+                    isInGroup={isInGroup}
                     onSelect={onSelect}
                 />
             ))}
@@ -117,36 +116,34 @@ function LogTable({
                     {items.map((item) => {
                         if (item.type === 'node') return renderNode(item.node)
                         const isExpanded = expanded.has(item.key)
-                        const isAll2xx = item.nodes.every((n) => (n.row.statusCode ?? 0) < 300)
+                        const label = `정상 처리한 요청 ${item.nodes.length}건`
                         return (
                             <Fragment key={item.key}>
                                 <tr className={styles.groupRow}>
                                     <td colSpan={COLUMN_COUNT}>
-                                        <span className={styles.groupInner}>
-                                            <span className={styles.groupStatus}>
-                                                ✓ {isAll2xx ? '2xx' : '2xx·3xx'}
+                                        <button
+                                            type="button"
+                                            className={styles.groupToggle}
+                                            aria-expanded={isExpanded}
+                                            aria-label={label}
+                                            onClick={() => toggleGroup(item.key)}
+                                        >
+                                            <span className={styles.groupChevron} aria-hidden="true">
+                                                ›
                                             </span>
-                                            <span className={styles.groupLabel}>
-                                                정상 처리한 요청 {item.nodes.length}건
+                                            <span className={styles.groupCheck} aria-hidden="true">
+                                                ✓
                                             </span>
-                                            <span className={styles.groupPaths} title={item.paths.join('\n')}>
-                                                {item.paths.join(' ')}
-                                            </span>
-                                            <span className={styles.groupTime}>
-                                                {clock(item.from)} – {clock(item.to)}
-                                            </span>
-                                            <Button
-                                                variant="link"
-                                                size="sm"
-                                                aria-expanded={isExpanded}
-                                                onClick={() => toggleGroup(item.key)}
-                                            >
-                                                {isExpanded ? '접기 ⌃' : '펼치기 ⌄'}
-                                            </Button>
-                                        </span>
+                                            <span>{label}</span>
+                                            {isExpanded ? (
+                                                <span className={styles.groupCollapse} aria-hidden="true">
+                                                    접기
+                                                </span>
+                                            ) : null}
+                                        </button>
                                     </td>
                                 </tr>
-                                {isExpanded ? item.nodes.map(renderNode) : null}
+                                {isExpanded ? item.nodes.map((node) => renderNode(node, true)) : null}
                             </Fragment>
                         )
                     })}
