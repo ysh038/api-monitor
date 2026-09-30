@@ -25,7 +25,7 @@ Spring Boot 앱 (+ starter)
 Gradle:
 ```groovy
 dependencies {
-    implementation 'io.github.ysh038:api-monitor-spring-boot-starter:1.1.0'
+    implementation 'io.github.ysh038:api-monitor-spring-boot-starter:1.2.0'
 }
 ```
 
@@ -34,7 +34,7 @@ Maven:
 <dependency>
     <groupId>io.github.ysh038</groupId>
     <artifactId>api-monitor-spring-boot-starter</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
 </dependency>
 ```
 
@@ -53,6 +53,13 @@ http://<앱 주소>:<앱 포트>/_api-monitor
 ```
 
 - `server.servlet.context-path`가 있으면 그 아래(`/<context-path>/_api-monitor`)에서 열립니다.
+- 경로는 `application.yaml`의 `api-monitor.dashboard.path`(환경변수 `API_MONITOR_DASHBOARD_PATH`)로 바꿀 수 있습니다. 앱의 실제 API 경로와 겹치지 않게 정하세요.
+  ```yaml
+  api-monitor:
+    dashboard:
+      path: /monitor      # → http://<앱 주소>:<앱 포트>/monitor
+  ```
+- 화면 오른쪽 위에서 테마(자동/라이트/다크)를 고를 수 있습니다. 선택은 브라우저에 저장됩니다.
 - 앱의 Spring Security 설정과 관계없이 열립니다. 스타터 필터가 Security보다 먼저 이 경로를 처리합니다.
 - 대시보드 자체에 대한 요청은 기록하지 않습니다.
 - 목록은 5초마다 자동으로 갱신됩니다.
