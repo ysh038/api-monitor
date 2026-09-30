@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { expect, fn, within } from 'storybook/test'
+import { expect, fn, waitFor, within } from 'storybook/test'
 
 import { makeOutbound, makeRow, makeScenario } from '../../../mocks/logFixtures'
 
@@ -60,7 +60,8 @@ export const ExpandGroup: TStory = {
         group.focus()
         await userEvent.keyboard('{Enter}')
         await expect(group).toHaveAttribute('aria-expanded', 'false')
-        await expect(canvas.queryByText('/api/v1/receipts/f1')).toBeNull()
+        // C5a: 줄어드는 애니메이션이 끝난 뒤에 사라진다
+        await waitFor(() => expect(canvas.queryByText('/api/v1/receipts/f1')).toBeNull())
     },
 }
 
@@ -192,5 +193,48 @@ export const GroupLooksLikeARow: TStory = {
         await expect(cells[0]).toHaveTextContent('2xx')
         await expect(cells[1]).toHaveTextContent('order-api')
         await expect(cells[3]).toHaveTextContent('정상 처리한 요청 2건')
+    },
+}
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+const heightOf = (el: Element | null) => el?.getBoundingClientRect().height ?? -1
+const topOf = (el: Element | null) => el?.getBoundingClientRect().top ?? -1
+
+/**
+ * C5a: 아코디언 — 묶였던 행은 0에서 서서히 늘고 줄며, 아래 행은 그 속도대로 함께 움직인다
+ * (미리 점프하지 않는다).
+ */
+export const AccordionAnimation: TStory = {
+    play: async ({ canvas, canvasElement, userEvent }) => {
+        const [group] = canvas.getAllByRole('button', { name: '정상 처리한 요청 2건' })
+        const below = canvas.getByText('/api/v1/payments/7781').closest('tr')
+        const topClosed = topOf(below)
+
+        await userEvent.click(group)
+        const firstGrouped = () => canvasElement.querySelector('[data-grouped="true"]')
+        // 펼친 직후: 묶인 행은 아직 거의 높이가 없다 → 아래 행도 거의 안 움직였다
+        await expect(heightOf(firstGrouped())).toBeLessThan(8)
+        await sleep(140)
+        // 도중: 행 높이도, 아래 행 위치도 처음과 끝 사이
+        const midHeight = heightOf(firstGrouped())
+        const midTop = topOf(below)
+        await expect(midHeight).toBeGreaterThan(2)
+        await sleep(400)
+        const fullHeight = heightOf(firstGrouped())
+        const topOpen = topOf(below)
+        await expect(midHeight).toBeLessThan(fullHeight - 2)
+        await expect(midTop).toBeGreaterThan(topClosed + 1)
+        await expect(midTop).toBeLessThan(topOpen - 1)
+        await expect(fullHeight).toBeGreaterThan(25)
+
+        // 접기: 누른 직후에는 아직 남아 있고, 줄어드는 도중을 거쳐, 끝나면 사라진다
+        await userEvent.click(group)
+        await expect(firstGrouped()).not.toBeNull()
+        await sleep(140)
+        await expect(heightOf(firstGrouped())).toBeLessThan(fullHeight - 2)
+        await expect(topOf(below)).toBeGreaterThan(topClosed + 1)
+        await sleep(400)
+        await expect(firstGrouped()).toBeNull()
+        await expect(Math.round(topOf(below))).toBe(Math.round(topClosed))
     },
 }

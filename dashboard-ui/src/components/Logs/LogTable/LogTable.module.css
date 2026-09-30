@@ -230,6 +230,43 @@
     font-size: var(--font-size-xs);
 }
 
+/*
+ * 아코디언 행 (spec C5a) — 표 행은 높이를 직접 전환할 수 없어서 칸마다 grid 한 줄(0fr ↔ 1fr)로 감싼다.
+ * 칸의 여백·테두리도 안쪽(collapsePad)으로 옮겨 전부 같은 속도로 늘고 줄게 한다 —
+ * 그래야 아래 행들이 미리 점프하지 않고 함께 움직인다.
+ */
+.collapsible td {
+    padding: 0;
+    border-bottom: 0;
+}
+
+.collapseGrid {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--duration-slow) var(--easing-standard);
+}
+
+.collapsible[data-collapse='open'] .collapseGrid {
+    grid-template-rows: 1fr;
+}
+
+.collapseClip {
+    min-height: 0;
+    overflow: hidden;
+}
+
+.collapsePad {
+    padding: var(--space-3);
+    border-bottom: 1px solid var(--color-border);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.isQuiet .collapsePad {
+    padding-block: var(--space-2);
+}
+
 /* 펼친 묶음 안의 행 — 왼쪽 세로선으로 묶음임을 표시 */
 .row[data-grouped='true'] td:first-child {
     box-shadow: inset 3px 0 0 var(--color-border-strong);

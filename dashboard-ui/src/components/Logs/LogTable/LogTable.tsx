@@ -1,4 +1,4 @@
-import { Fragment, useMemo, useState } from 'react'
+import { Fragment, useMemo } from 'react'
 
 import Button from '../../../design-system/atoms/Button'
 import EmptyState from '../../../design-system/atoms/EmptyState'
@@ -7,6 +7,7 @@ import { buildListItems, buildLogTree, type ILogNode } from '../../../utils/logs
 
 import styles from './LogTable.module.css'
 import LogTableRow from './LogTableRow'
+import { useGroupAccordion } from './useGroupAccordion'
 
 export interface ILogTableProps {
     rows: ILogRow[]
@@ -42,16 +43,13 @@ function LogTable({
         () => buildListItems(buildLogTree(rows), { isGroupingSuccess }),
         [rows, isGroupingSuccess],
     )
-    const [expanded, setExpanded] = useState<ReadonlySet<string>>(new Set())
-    const toggleGroup = (key: string) =>
-        setExpanded((prev) => {
-            const next = new Set(prev)
-            if (next.has(key)) next.delete(key)
-            else next.add(key)
-            return next
-        })
+    const groups = useGroupAccordion()
 
-    const renderNode = ({ row, children }: ILogNode, isInGroup = false) => (
+    const renderNode = (
+        { row, children }: ILogNode,
+        isInGroup = false,
+        collapse?: 'open' | 'closed',
+    ) => (
         <Fragment key={row.id}>
             <LogTableRow
                 row={row}
@@ -60,6 +58,7 @@ function LogTable({
                 isSelected={row.id === selectedId}
                 isNew={newIds.has(row.id)}
                 isInGroup={isInGroup}
+                collapse={collapse}
                 onSelect={onSelect}
             />
             {children.map((child) => (
@@ -71,6 +70,7 @@ function LogTable({
                     isSelected={child.id === selectedId}
                     isNew={newIds.has(child.id)}
                     isInGroup={isInGroup}
+                    collapse={collapse}
                     onSelect={onSelect}
                 />
             ))}
@@ -113,11 +113,12 @@ function LogTable({
                 <tbody>
                     {items.map((item) => {
                         if (item.type === 'node') return renderNode(item.node)
-                        const isExpanded = expanded.has(item.key)
+                        const phase = groups.phaseOf(item.key)
+                        const isExpanded = phase === 'opening' || phase === 'open'
                         const label = `정상 처리한 요청 ${item.nodes.length}건`
                         const services = new Set(item.nodes.map((n) => n.row.serviceName))
                         const service = services.size === 1 ? [...services][0] : ''
-                        const toggle = () => toggleGroup(item.key)
+                        const toggle = () => groups.toggle(item.key)
                         return (
                             <Fragment key={item.key}>
                                 {/* 행 어디를 눌러도 여닫힌다. 키보드·스크린리더용 버튼은 상태 칸에 두고,
@@ -155,7 +156,11 @@ function LogTable({
                                     <td />
                                     <td className={styles.hideNarrow} />
                                 </tr>
-                                {isExpanded ? item.nodes.map((node) => renderNode(node, true)) : null}
+                                {phase
+                                    ? item.nodes.map((node) =>
+                                          renderNode(node, true, phase === 'open' ? 'open' : 'closed'),
+                                      )
+                                    : null}
                             </Fragment>
                         )
                     })}
