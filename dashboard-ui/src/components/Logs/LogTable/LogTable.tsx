@@ -24,9 +24,7 @@ export interface ILogTableProps {
     onLoadMore: () => void
 }
 
-const COLUMN_COUNT = 7
-
-/** 요청 기록 표: 외부 호출 트리 · 정상 요청 묶음 · 시간 공백 */
+/** 요청 기록 표: 보낸 요청 트리 · 정상 요청 묶음 */
 function LogTable({
     rows,
     isGroupingSuccess,
@@ -117,31 +115,45 @@ function LogTable({
                         if (item.type === 'node') return renderNode(item.node)
                         const isExpanded = expanded.has(item.key)
                         const label = `정상 처리한 요청 ${item.nodes.length}건`
+                        const services = new Set(item.nodes.map((n) => n.row.serviceName))
+                        const service = services.size === 1 ? [...services][0] : ''
+                        const toggle = () => toggleGroup(item.key)
                         return (
                             <Fragment key={item.key}>
-                                <tr className={styles.groupRow}>
-                                    <td colSpan={COLUMN_COUNT}>
+                                {/* 행 어디를 눌러도 여닫힌다. 키보드·스크린리더용 버튼은 상태 칸에 두고,
+                                    버튼 클릭은 이 행으로 전달돼 한 번만 토글된다 */}
+                                <tr
+                                    className={`${styles.row} ${styles.isQuiet} ${styles.groupRow}`}
+                                    onClick={toggle}
+                                >
+                                    <td>
                                         <button
                                             type="button"
                                             className={styles.groupToggle}
                                             aria-expanded={isExpanded}
                                             aria-label={label}
-                                            onClick={() => toggleGroup(item.key)}
                                         >
                                             <span className={styles.groupChevron} aria-hidden="true">
                                                 ›
                                             </span>
-                                            <span className={styles.groupCheck} aria-hidden="true">
-                                                ✓
-                                            </span>
-                                            <span>{label}</span>
-                                            {isExpanded ? (
-                                                <span className={styles.groupCollapse} aria-hidden="true">
-                                                    접기
-                                                </span>
-                                            ) : null}
+                                            2xx
                                         </button>
                                     </td>
+                                    <td className={`${styles.service} ${styles.hideNarrow}`} title={service || undefined}>
+                                        {service}
+                                    </td>
+                                    <td />
+                                    <td>
+                                        {label}
+                                        {isExpanded ? (
+                                            <span className={styles.groupCollapse} aria-hidden="true">
+                                                접기
+                                            </span>
+                                        ) : null}
+                                    </td>
+                                    <td />
+                                    <td />
+                                    <td className={styles.hideNarrow} />
                                 </tr>
                                 {isExpanded ? item.nodes.map((node) => renderNode(node, true)) : null}
                             </Fragment>

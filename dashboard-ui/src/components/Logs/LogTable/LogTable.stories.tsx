@@ -176,3 +176,21 @@ export const NotUpdating: TStory = {
         await expect(canvas.getByRole('button', { name: '더 보기' })).toBeEnabled()
     },
 }
+
+/** C5: 묶음 줄은 구분선이 아니라 표의 한 행 — 같은 칸·같은 배경, 상태 칸 2xx, 서비스 칸은 공통 서비스 */
+export const GroupLooksLikeARow: TStory = {
+    play: async ({ canvas }) => {
+        const [toggle] = canvas.getAllByRole('button', { name: '정상 처리한 요청 2건' })
+        const groupRow = toggle.closest('tr')
+        const dataRow = canvas.getByText('/api/v1/payments/7781').closest('tr')
+        if (!groupRow || !dataRow) throw new Error('행 없음')
+        const cells = groupRow.querySelectorAll('td')
+        await expect(cells).toHaveLength(dataRow.querySelectorAll('td').length)
+        await expect(getComputedStyle(groupRow).backgroundColor).toBe(
+            getComputedStyle(canvas.getByText('/api/v1/risk-scores').closest('tr') as Element).backgroundColor,
+        )
+        await expect(cells[0]).toHaveTextContent('2xx')
+        await expect(cells[1]).toHaveTextContent('order-api')
+        await expect(cells[3]).toHaveTextContent('정상 처리한 요청 2건')
+    },
+}
