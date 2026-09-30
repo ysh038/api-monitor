@@ -190,7 +190,7 @@
     color: var(--color-text-muted);
 }
 
-/* ---------- 묶음 · 공백 ---------- */
+/* ---------- 묶음 ---------- */
 .groupRow td {
     padding-block: var(--space-2);
     background: var(--color-surface-muted);
@@ -230,21 +230,6 @@
     flex: none;
     color: var(--color-text-muted);
     font-family: var(--font-family-mono);
-    font-size: var(--font-size-sm);
-}
-
-.gapRow td {
-    padding-block: var(--space-2);
-    background: var(--color-surface);
-    text-align: center;
-}
-
-.gapPill {
-    display: inline-block;
-    padding: var(--space-1) var(--space-3);
-    border-radius: var(--radius-md);
-    background: var(--color-surface-muted);
-    color: var(--color-text-muted);
     font-size: var(--font-size-sm);
 }
 

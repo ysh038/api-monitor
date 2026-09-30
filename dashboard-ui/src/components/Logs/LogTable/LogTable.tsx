@@ -3,7 +3,7 @@ import { Fragment, useMemo, useState } from 'react'
 import Button from '../../../design-system/atoms/Button'
 import EmptyState from '../../../design-system/atoms/EmptyState'
 import type { ILogRow } from '../../../types/log'
-import { formatSpan, formatTime } from '../../../utils/logs/format'
+import { formatTime } from '../../../utils/logs/format'
 import { buildListItems, buildLogTree, type ILogNode } from '../../../utils/logs/listView'
 
 import styles from './LogTable.module.css'
@@ -116,17 +116,6 @@ function LogTable({
                 <tbody>
                     {items.map((item) => {
                         if (item.type === 'node') return renderNode(item.node)
-                        if (item.type === 'gap') {
-                            return (
-                                <tr key={item.key} className={styles.gapRow}>
-                                    <td colSpan={COLUMN_COUNT}>
-                                        <span className={styles.gapPill}>
-                                            {formatSpan(item.spanMs)} 동안 기록된 요청이 없어요
-                                        </span>
-                                    </td>
-                                </tr>
-                            )
-                        }
                         const isExpanded = expanded.has(item.key)
                         const isAll2xx = item.nodes.every((n) => (n.row.statusCode ?? 0) < 300)
                         return (

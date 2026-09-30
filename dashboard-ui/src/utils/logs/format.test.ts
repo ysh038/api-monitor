@@ -3,7 +3,6 @@ import { describe, expect, it } from 'vitest'
 import {
     formatDetailTime,
     formatDuration,
-    formatSpan,
     formatTime,
     splitTime,
 } from './format'
@@ -70,17 +69,5 @@ describe('formatDetailTime (B6)', () => {
         expect(formatDetailTime(at(0, 30, 0, 0))).toBe(
             '9월 29일 오전 12:30:00.000',
         )
-    })
-})
-
-describe('formatSpan (C4 공백 문구)', () => {
-    it.each([
-        [45_000, '45초'],
-        [925_000, '15분 25초'],
-        [19 * 60_000, '19분'],
-        [63 * 60_000, '1시간 3분'],
-        [2 * 3_600_000, '2시간'],
-    ])('%s → %s', (ms, expected) => {
-        expect(formatSpan(ms)).toBe(expected)
     })
 })

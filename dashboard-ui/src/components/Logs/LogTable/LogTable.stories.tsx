@@ -30,11 +30,12 @@ const meta = {
 export default meta
 type TStory = StoryObj<typeof meta>
 
-/** 참고 이미지 구성: 묶음 · 트리 · 공백 */
+/** 참고 이미지 구성: 묶음 · 트리 */
 export const Scenario: TStory = {
     play: async ({ canvas }) => {
         await expect(canvas.getAllByText('정상 처리한 요청 2건')).toHaveLength(2)
-        await expect(canvas.getByText(/19분 동안 기록된 요청이 없어요/)).toBeVisible()
+        // C4 제거: 시간 공백 줄은 없다
+        await expect(canvas.queryByText(/동안 기록된 요청이 없어요/)).toBeNull()
         // C6: 부모 아래 들여쓴 외부 호출
         await expect(canvas.getByText('pg-gateway:9000')).toBeVisible()
     },

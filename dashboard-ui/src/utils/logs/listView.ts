@@ -21,9 +21,6 @@ export type TListItem =
           /** 가장 최신 시각 */
           to: number
       }
-    | { type: 'gap'; key: string; spanMs: number }
-
-export const GAP_THRESHOLD_MS = 5 * 60 * 1000
 
 /** 부모 요청을 찾는 키. requestId 는 서비스 간에 전파될 수 있어 서비스 이름과 같이 쓴다 */
 export const parentKey = (serviceName: string, requestId: string) =>
@@ -77,15 +74,12 @@ function toGroup(run: ILogNode[]): TListItem {
 }
 
 /**
- * 표에 그릴 항목 목록. 5분 이상 비면 공백 항목을 넣고,
- * 묶기가 켜져 있으면 공백으로 끊기지 않은 연속 정상 항목 2개 이상을 묶는다.
+ * 표에 그릴 항목 목록. 묶기가 켜져 있으면 연속 정상 항목 2개 이상을 묶는다.
+ * (시간 공백 줄과 공백으로 묶음을 끊던 동작은 2026-09-30 제거 — spec C4)
  */
 export function buildListItems(
     nodes: ILogNode[],
-    {
-        isGroupingSuccess,
-        gapThresholdMs = GAP_THRESHOLD_MS,
-    }: { isGroupingSuccess: boolean; gapThresholdMs?: number },
+    { isGroupingSuccess }: { isGroupingSuccess: boolean },
 ): TListItem[] {
     const items: TListItem[] = []
     let run: ILogNode[] = []
@@ -96,15 +90,7 @@ export function buildListItems(
         run = []
     }
 
-    nodes.forEach((node, index) => {
-        const newer = nodes[index - 1]
-        if (newer) {
-            const spanMs = newer.row.createdAt - node.row.createdAt
-            if (spanMs >= gapThresholdMs) {
-                flush()
-                items.push({ type: 'gap', key: `gap-${node.row.id}`, spanMs })
-            }
-        }
+    nodes.forEach((node) => {
         if (isGroupingSuccess && isSuccessNode(node)) {
             run.push(node)
             return

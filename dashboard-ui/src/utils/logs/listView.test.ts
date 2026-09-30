@@ -100,31 +100,19 @@ describe('buildListItems (C2~C4)', () => {
         expect(items.every((i) => i.type === 'node')).toBe(true)
     })
 
-    it('C4: 이웃한 항목이 5분 이상 떨어지면 공백 항목을 넣는다', () => {
+    it('C4 제거: 시간이 멀리 떨어져도 공백 항목을 넣지 않는다', () => {
         const newer = makeRow({ statusCode: 500, createdAt: BASE_TIME })
-        const older = makeRow({
-            statusCode: 500,
-            createdAt: BASE_TIME - 15 * MIN - 25_000,
-        })
-        const close = makeRow({
-            statusCode: 500,
-            createdAt: older.createdAt - 4 * MIN,
-        })
-        const items = buildListItems(buildLogTree([newer, older, close]), {
-            isGroupingSuccess: true,
-        })
-        expect(items.map((i) => i.type)).toEqual(['node', 'gap', 'node', 'node'])
-        const gap = items[1]
-        if (gap.type !== 'gap') throw new Error('gap 이어야 한다')
-        expect(gap.spanMs).toBe(15 * MIN + 25_000)
+        const older = makeRow({ statusCode: 500, createdAt: BASE_TIME - 27 * MIN })
+        const items = buildListItems(buildLogTree([newer, older]), { isGroupingSuccess: true })
+        expect(items.map((i) => i.type)).toEqual(['node', 'node'])
     })
 
-    it('공백은 묶음을 끊는다', () => {
+    it('C4 제거: 멀리 떨어진 정상 요청도 이어져 있으면 한 묶음이다', () => {
         const items = buildListItems(
             buildLogTree([ok(0), ok(-10 * MIN), ok(-10 * MIN - 1000)]),
             { isGroupingSuccess: true },
         )
-        expect(items.map((i) => i.type)).toEqual(['node', 'gap', 'group'])
+        expect(items.map((i) => i.type)).toEqual(['group'])
     })
 
     it('참고 이미지 시나리오', () => {
@@ -140,8 +128,7 @@ describe('buildListItems (C2~C4)', () => {
             'node', // 404
             'node', // 400
             'node', // 401
-            'gap',
-            'group', // 오래된 정상 2건
+            'group', // 20분 전 정상 2건 — 공백 줄 없이 바로 이어진다
         ])
     })
 

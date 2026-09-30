@@ -50,16 +50,5 @@ export function formatDetailTime(ms: number): string {
     return `${d.getMonth() + 1}월 ${d.getDate()}일 ${meridiem} ${pad(hour12)}:${pad(d.getMinutes())}:${pad(d.getSeconds())}.${pad(d.getMilliseconds(), 3)}`
 }
 
-/** 두 시각 사이 길이: 45초 · 15분 25초 · 1시간 3분 */
-export function formatSpan(ms: number): string {
-    const totalSeconds = Math.floor(ms / 1000)
-    const hours = Math.floor(totalSeconds / 3600)
-    const minutes = Math.floor((totalSeconds % 3600) / 60)
-    const seconds = totalSeconds % 60
-    if (hours > 0) return minutes > 0 ? `${hours}시간 ${minutes}분` : `${hours}시간`
-    if (minutes > 0) return seconds > 0 ? `${minutes}분 ${seconds}초` : `${minutes}분`
-    return `${seconds}초`
-}
-
 /** 1,234 */
 export const formatCount = (n: number) => n.toLocaleString('ko-KR')
