@@ -68,12 +68,8 @@ function DashboardPage() {
                         <LogFilters
                             filters={d.filters}
                             searchText={d.searchText}
-                            serviceOptions={d.serviceOptions}
-                            isServiceEmpty={d.isServiceEmpty}
                             onKindChange={d.changeKind}
                             onToggleStatus={d.toggleStatus}
-                            onExceptionOnlyChange={d.setExceptionOnly}
-                            onServiceChange={d.changeService}
                             onSearchTextChange={d.setSearchText}
                         />
                         {d.scopeLabel ? (

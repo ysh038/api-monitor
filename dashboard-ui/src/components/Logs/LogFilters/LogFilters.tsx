@@ -1,7 +1,5 @@
-import Checkbox from '../../../design-system/atoms/Checkbox'
 import SearchField from '../../../design-system/atoms/SearchField'
 import SegmentedControl from '../../../design-system/atoms/SegmentedControl'
-import Select, { type ISelectOption } from '../../../design-system/atoms/Select'
 import ToggleChip from '../../../design-system/atoms/ToggleChip'
 import type { ILogFilters, TLogKind, TStatusFilter } from '../../../types/log'
 
@@ -34,25 +32,17 @@ export interface ILogFiltersProps {
     filters: ILogFilters
     /** 디바운스 전 입력값 */
     searchText: string
-    serviceOptions: ISelectOption[]
-    isServiceEmpty: boolean
     onKindChange: (kind: TLogKind | '') => void
     onToggleStatus: (status: TStatusFilter) => void
-    onExceptionOnlyChange: (isOn: boolean) => void
-    onServiceChange: (service: string) => void
     onSearchTextChange: (text: string) => void
 }
 
-/** 구분 · 상태 칩 · 예외만 · 서비스 · 검색 */
+/** 구분 · 상태 칩 · 검색 */
 function LogFilters({
     filters,
     searchText,
-    serviceOptions,
-    isServiceEmpty,
     onKindChange,
     onToggleStatus,
-    onExceptionOnlyChange,
-    onServiceChange,
     onSearchTextChange,
 }: ILogFiltersProps) {
     return (
@@ -75,18 +65,6 @@ function LogFilters({
                     />
                 ))}
             </div>
-            <Checkbox
-                label="예외가 난 요청만"
-                isChecked={filters.isExceptionOnly}
-                onChange={onExceptionOnlyChange}
-            />
-            <Select
-                label="서비스"
-                value={filters.service}
-                options={serviceOptions}
-                isDisabled={isServiceEmpty}
-                onChange={onServiceChange}
-            />
             <div className={styles.search}>
                 <SearchField
                     label="로그 검색"

@@ -35,17 +35,15 @@ describe('쿼리스트링 (A2)', () => {
         expect(
             buildLogsUrl(
                 {
-                    service: 'order-api',
                     host: 'pg:9000',
                     kind: 'OUTBOUND',
                     statuses: ['5xx', 'none'],
-                    isExceptionOnly: true,
                     q: 'a b',
                 },
                 { afterId: 7, limit: 500 },
             ),
         ).toBe(
-            'api/logs?service=order-api&host=pg%3A9000&kind=OUTBOUND&status=5xx%2Cnone&exception=1&q=a+b&afterId=7&limit=500',
+            'api/logs?host=pg%3A9000&kind=OUTBOUND&status=5xx%2Cnone&q=a+b&afterId=7&limit=500',
         )
     })
 

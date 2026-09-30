@@ -15,7 +15,6 @@ import {
 } from '../../utils/logs/feed'
 import {
     changeKind,
-    changeService,
     clearScope,
     getScopeLabel,
     hasAnyFilter,
@@ -23,7 +22,7 @@ import {
     selectHost,
     toggleStatus,
 } from '../../utils/logs/filterState'
-import { buildServiceOptions, getScopeTotal } from '../../utils/logs/serviceOptions'
+import { getTotalCount } from '../../utils/logs/serviceOptions'
 import { getDevServerNotice } from '../../utils/devServer'
 import { useDebouncedValue, useFlashMessage, useTheme } from '../shared'
 
@@ -130,8 +129,6 @@ export function useDashboard() {
         }
     }
 
-    const serviceOptions = useMemo(() => buildServiceOptions(services.data), [services.data])
-
     return {
         // 상단 바
         isDev,
@@ -151,14 +148,9 @@ export function useDashboard() {
         setSearchText,
         hasFilter: hasAnyFilter(filters),
         scopeLabel: getScopeLabel(filters),
-        serviceOptions: serviceOptions.options,
-        isServiceEmpty: serviceOptions.isEmpty,
-        totalCount: getScopeTotal(services.data, filters.service),
+        totalCount: getTotalCount(services.data),
         changeKind: (kind: TLogKind | '') => updateFilters((f) => changeKind(f, kind)),
         toggleStatus: (status: TStatusFilter) => updateFilters((f) => toggleStatus(f, status)),
-        setExceptionOnly: (isOn: boolean) =>
-            updateFilters((f) => ({ ...f, isExceptionOnly: isOn })),
-        changeService: (service: string) => updateFilters((f) => changeService(f, service)),
         selectHost: (host: string) => updateFilters((f) => selectHost(f, host)),
         clearScope: () => updateFilters(clearScope),
         // 목록

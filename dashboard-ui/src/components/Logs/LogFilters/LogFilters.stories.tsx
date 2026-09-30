@@ -12,15 +12,8 @@ const meta = {
     args: {
         filters: EMPTY_FILTERS,
         searchText: '',
-        serviceOptions: [
-            { value: '', label: '전체 서비스 · 1,230건 · 에러 5' },
-            { value: 'order-api', label: 'order-api · 1,200건 · 에러 5' },
-        ],
-        isServiceEmpty: false,
         onKindChange: fn(),
         onToggleStatus: fn(),
-        onExceptionOnlyChange: fn(),
-        onServiceChange: fn(),
         onSearchTextChange: fn(),
     },
 } satisfies Meta<typeof LogFilters>
@@ -40,11 +33,6 @@ export const Default: TStory = {
         // E2
         await userEvent.click(canvas.getByRole('button', { name: '5xx' }))
         await expect(args.onToggleStatus).toHaveBeenCalledWith('5xx')
-        await userEvent.click(canvas.getByRole('checkbox', { name: '예외가 난 요청만' }))
-        await expect(args.onExceptionOnlyChange).toHaveBeenCalledWith(true)
-        // E6
-        await userEvent.selectOptions(canvas.getByRole('combobox', { name: '서비스' }), 'order-api')
-        await expect(args.onServiceChange).toHaveBeenCalledWith('order-api')
         await userEvent.type(canvas.getByRole('searchbox', { name: '로그 검색' }), 'x')
         await expect(args.onSearchTextChange).toHaveBeenCalledWith('x')
     },
@@ -53,7 +41,7 @@ export const Default: TStory = {
 /** E2: 여러 상태 칩이 동시에 켜진다 */
 export const MultipleStatuses: TStory = {
     args: {
-        filters: { ...EMPTY_FILTERS, kind: 'INBOUND', statuses: ['4xx', 'none'], isExceptionOnly: true },
+        filters: { ...EMPTY_FILTERS, kind: 'INBOUND', statuses: ['4xx', 'none'] },
     },
     play: async ({ canvas }) => {
         await expect(canvas.getByRole('button', { name: '받은 요청' })).toHaveAttribute(
@@ -69,16 +57,13 @@ export const MultipleStatuses: TStory = {
             'aria-pressed',
             'false',
         )
-        await expect(canvas.getByRole('checkbox')).toBeChecked()
     },
 }
 
-export const NoServices: TStory = {
-    args: {
-        isServiceEmpty: true,
-        serviceOptions: [{ value: '', label: '아직 로그를 보낸 서비스가 없습니다' }],
-    },
+/** E6 제거 (2026-09-30): 필터 줄에 서비스 선택 상자와 "예외가 난 요청만" 이 없다 */
+export const NoServiceOrExceptionFilter: TStory = {
     play: async ({ canvas }) => {
-        await expect(canvas.getByRole('combobox', { name: '서비스' })).toBeDisabled()
+        await expect(canvas.queryByRole('combobox')).toBeNull()
+        await expect(canvas.queryByRole('checkbox')).toBeNull()
     },
 }
