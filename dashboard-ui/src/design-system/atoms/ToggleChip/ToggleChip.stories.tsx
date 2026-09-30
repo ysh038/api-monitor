@@ -65,3 +65,21 @@ export const SmoothToggle: TStory = {
         await expect(chip.getBoundingClientRect().width).toBe(widthOff)
     },
 }
+
+const TRANSPARENT = 'rgba(0, 0, 0, 0)'
+
+/** 트랙 안에서 쓰는 모양 (E2a): 꺼지면 배경 없음, 켜지면 상태 색 배경 */
+export const Plain: TStory = {
+    render: (args) => (
+        <>
+            <ToggleChip {...args} appearance="plain" label="2xx" tone="neutral" />
+            <ToggleChip {...args} appearance="plain" label="4xx" tone="warning" isPressed />
+        </>
+    ),
+    play: async ({ canvas }) => {
+        const off = canvas.getByRole('button', { name: '2xx' })
+        const on = canvas.getByRole('button', { name: '4xx' })
+        await expect(getComputedStyle(off).backgroundColor).toBe(TRANSPARENT)
+        await expect(getComputedStyle(on).backgroundColor).not.toBe(TRANSPARENT)
+    },
+}

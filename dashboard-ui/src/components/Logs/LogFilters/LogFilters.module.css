@@ -5,10 +5,15 @@
     gap: var(--space-3);
 }
 
+/* 상태 칩 묶음 — 옆 세그먼트(SegmentedControl .group)와 같은 트랙 한 장 (E2a) */
 .chips {
-    display: flex;
+    display: inline-flex;
+    flex: none;
     flex-wrap: wrap;
-    gap: var(--space-2);
+    gap: 2px;
+    padding: 3px;
+    border-radius: var(--radius-md);
+    background: var(--color-surface-muted);
 }
 
 .search {

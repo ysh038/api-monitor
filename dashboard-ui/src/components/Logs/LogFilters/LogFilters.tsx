@@ -57,6 +57,7 @@ function LogFilters({
                 {STATUS_CHIPS.map((chip) => (
                     <ToggleChip
                         key={chip.value}
+                        appearance="plain"
                         label={chip.label}
                         tone={chip.tone}
                         title={chip.title}

@@ -67,3 +67,25 @@ export const NoServiceOrExceptionFilter: TStory = {
         await expect(canvas.queryByRole('checkbox')).toBeNull()
     },
 }
+
+/** E2a: 상태 칩은 세그먼트와 같은 회색 트랙 한 장 위에 묶여 있고, 꺼진 칩은 배경이 없다 */
+export const StatusChipsInTrack: TStory = {
+    args: { filters: { ...EMPTY_FILTERS, statuses: ['4xx'] } },
+    play: async ({ canvas }) => {
+        const TRANSPARENT = 'rgba(0, 0, 0, 0)'
+        const segment = canvas.getByRole('group', { name: '요청 구분' })
+        const track = canvas.getByRole('group', { name: '상태' })
+        await expect(getComputedStyle(track).backgroundColor).not.toBe(TRANSPARENT)
+        await expect(getComputedStyle(track).backgroundColor).toBe(
+            getComputedStyle(segment).backgroundColor,
+        )
+        // 두 묶음의 높이가 같다 — 나란히 놓였을 때 한 줄로 맞는다
+        await expect(Math.round(track.getBoundingClientRect().height)).toBe(
+            Math.round(segment.getBoundingClientRect().height),
+        )
+        const off = canvas.getByRole('button', { name: '2xx' })
+        const on = canvas.getByRole('button', { name: '4xx' })
+        await expect(getComputedStyle(off).backgroundColor).toBe(TRANSPARENT)
+        await expect(getComputedStyle(on).backgroundColor).not.toBe(TRANSPARENT)
+    },
+}
