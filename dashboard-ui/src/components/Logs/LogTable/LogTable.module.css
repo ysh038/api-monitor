@@ -250,6 +250,16 @@
     grid-template-rows: 1fr;
 }
 
+/*
+ * 새로 나타난 행은 첫 프레임에 0fr 에서 시작해 곧바로 1fr 로 전환된다 (spec C5b ② — 프레임 대기 없음).
+ * 이미 그려진 행(접는 중에 다시 펼침)에는 적용되지 않아 지금 높이에서 이어서 늘어난다.
+ */
+@starting-style {
+    .collapsible[data-collapse='open'] .collapseGrid {
+        grid-template-rows: 0fr;
+    }
+}
+
 .collapseClip {
     min-height: 0;
     overflow: hidden;

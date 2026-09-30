@@ -25,6 +25,9 @@ export interface ILogTableProps {
     onLoadMore: () => void
 }
 
+/** 표에 그릴 행(보낸 요청 포함)이 이보다 많은 묶음은 애니메이션 없이 여닫는다 (spec C5b ③) */
+const ACCORDION_MAX_ROWS = 30
+
 /** 요청 기록 표: 보낸 요청 트리 · 정상 요청 묶음 */
 function LogTable({
     rows,
@@ -114,11 +117,13 @@ function LogTable({
                     {items.map((item) => {
                         if (item.type === 'node') return renderNode(item.node)
                         const phase = groups.phaseOf(item.key)
-                        const isExpanded = phase === 'opening' || phase === 'open'
+                        const isExpanded = phase === 'open'
+                        const rowCount = item.nodes.reduce((sum, n) => sum + 1 + n.children.length, 0)
+                        const isAnimated = rowCount <= ACCORDION_MAX_ROWS
                         const label = `정상 처리한 요청 ${item.nodes.length}건`
                         const services = new Set(item.nodes.map((n) => n.row.serviceName))
                         const service = services.size === 1 ? [...services][0] : ''
-                        const toggle = () => groups.toggle(item.key)
+                        const toggle = () => groups.toggle(item.key, isAnimated)
                         return (
                             <Fragment key={item.key}>
                                 {/* 행 어디를 눌러도 여닫힌다. 키보드·스크린리더용 버튼은 상태 칸에 두고,
@@ -158,7 +163,11 @@ function LogTable({
                                 </tr>
                                 {phase
                                     ? item.nodes.map((node) =>
-                                          renderNode(node, true, phase === 'open' ? 'open' : 'closed'),
+                                          renderNode(
+                                              node,
+                                              true,
+                                              isAnimated ? (isExpanded ? 'open' : 'closed') : undefined,
+                                          ),
                                       )
                                     : null}
                             </Fragment>

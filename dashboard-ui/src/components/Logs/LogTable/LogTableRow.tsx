@@ -1,4 +1,4 @@
-import type { KeyboardEvent, ReactNode } from 'react'
+import { memo, type KeyboardEvent, type ReactNode } from 'react'
 
 import MeterBar from '../../../design-system/atoms/MeterBar'
 import type { ILogRow } from '../../../types/log'
@@ -34,7 +34,7 @@ export interface ILogTableRowProps {
     onSelect: (id: number) => void
 }
 
-/** 표 한 줄. 클릭·Enter·Space 로 상세를 연다 */
+/** 표 한 줄. 클릭·Enter·Space 로 상세를 연다. props 가 같으면 다시 그리지 않는다 (memo) */
 function LogTableRow({
     row,
     isNested,
@@ -118,4 +118,5 @@ function LogTableRow({
     )
 }
 
-export default LogTableRow
+// 묶음을 여닫을 때 묶음 밖 행까지 다시 그리지 않도록 (spec C5b ①)
+export default memo(LogTableRow)

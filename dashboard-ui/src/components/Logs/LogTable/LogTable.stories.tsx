@@ -214,6 +214,9 @@ export const AccordionAnimation: TStory = {
         const firstGrouped = () => canvasElement.querySelector('[data-grouped="true"]')
         // 펼친 직후: 묶인 행은 아직 거의 높이가 없다 → 아래 행도 거의 안 움직였다
         await expect(heightOf(firstGrouped())).toBeLessThan(8)
+        // C5b ②: 프레임을 기다리지 않고 바로 늘기 시작한다 — 두 프레임 뒤엔 이미 높이가 있다
+        await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+        await expect(heightOf(firstGrouped())).toBeGreaterThan(0.5)
         await sleep(140)
         // 도중: 행 높이도, 아래 행 위치도 처음과 끝 사이
         const midHeight = heightOf(firstGrouped())
