@@ -31,6 +31,9 @@ export function makeRow(overrides: Partial<ILogRow> = {}): ILogRow {
         exceptionHandled: null,
         childCount: 0,
         isMock: false,
+        route: null,
+        errorCode: null,
+        rootCauseType: null,
         ...overrides,
     }
 }

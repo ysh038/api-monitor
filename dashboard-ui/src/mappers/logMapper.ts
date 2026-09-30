@@ -85,6 +85,9 @@ export function mapLogRow(value: unknown): ILogRow {
                 : flag(raw, 'exception_handled'),
         childCount: optNum(raw, 'child_count') ?? 0,
         isMock: flag(raw, 'is_mock'),
+        route: optStr(raw, 'route'),
+        errorCode: optStr(raw, 'error_code'),
+        rootCauseType: optStr(raw, 'root_cause_type'),
     }
 }
 

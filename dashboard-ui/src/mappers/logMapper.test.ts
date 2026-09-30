@@ -52,8 +52,29 @@ describe('mapLogList', () => {
                 exceptionHandled: null,
                 childCount: 0,
                 isMock: true,
+                route: null,
+                errorCode: null,
+                rootCauseType: null,
             },
         ])
+    })
+
+    it('L3: 선택 필드 route·error_code·root_cause_type 이 있으면 읽는다', () => {
+        const [row] = mapLogList({
+            items: [
+                {
+                    ...rawRow,
+                    route: '/api/v1/orders/{orderId}',
+                    error_code: 'ORDER_ALREADY_CANCELED',
+                    root_cause_type: 'java.net.SocketTimeoutException',
+                },
+            ],
+        })
+        expect(row).toMatchObject({
+            route: '/api/v1/orders/{orderId}',
+            errorCode: 'ORDER_ALREADY_CANCELED',
+            rootCauseType: 'java.net.SocketTimeoutException',
+        })
     })
 
     it('스타터 응답처럼 is_mock·선택 필드가 없어도 된다', () => {

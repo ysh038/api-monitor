@@ -33,6 +33,16 @@ export interface ILogRow {
     childCount: number
     /** Node 개발 모드 Mock 데이터 */
     isMock: boolean
+    /**
+     * 백엔드 로그 표준(Grafana)과 같은 이름의 선택 값 — 지금 서버·스타터는 보내지 않고 null.
+     * 오면 문제를 묶는 기준으로 쓴다 (docs/specs/dashboard-problem-summary.md P2·L3)
+     */
+    /** 경로 템플릿. 예: /api/v1/orders/{orderId} */
+    route: string | null
+    /** 비즈니스 오류 코드. 예: ORDER_ALREADY_CANCELED */
+    errorCode: string | null
+    /** 원인 체인 끝의 예외 클래스 전체 이름 */
+    rootCauseType: string | null
 }
 
 export interface IExceptionCause {

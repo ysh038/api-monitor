@@ -6,8 +6,8 @@ import {
     LogDetail,
     LogFilters,
     LogTable,
+    ProblemSummary,
     RequestLogHeader,
-    RequestTimeline,
     TopBar,
 } from '../components/Logs'
 import Drawer from '../design-system/organisms/Drawer'
@@ -65,7 +65,7 @@ function DashboardPage() {
                             onToggleStatus={d.toggleStatus}
                             onSearchTextChange={d.setSearchText}
                         />
-                        <RequestTimeline rows={d.rows} selectedId={d.selectedId} onSelect={d.selectRow} />
+                        <ProblemSummary rows={d.rows} onSelect={d.selectRow} />
                     </>
                 }
                 body={
