@@ -155,7 +155,7 @@ function LogDetail({ detail, isLoading, onNavigate, onCopy }: ILogDetailProps) {
                 </div>
             </Card>
 
-            {flowRoot && flowCalls.length > 0 ? (
+            {flowRoot ? (
                 <Card label="호출 흐름">
                     <CallFlow root={flowRoot} calls={flowCalls} currentId={detail.id} onNavigate={onNavigate} />
                 </Card>

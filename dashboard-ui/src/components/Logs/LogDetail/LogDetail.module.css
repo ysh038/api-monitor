@@ -123,69 +123,119 @@
     align-self: flex-start;
 }
 
-/* ---------- 호출 흐름 ---------- */
+/* ---------- 호출 흐름 — 서버별 레인 (spec F5) ---------- */
+.flowSummary {
+    margin: 0 0 var(--space-2);
+    color: var(--color-text);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+}
+
 .flow {
     display: flex;
     flex-direction: column;
-    gap: var(--space-2);
+    gap: var(--space-1);
     margin: 0;
     padding: 0;
     list-style: none;
+    --lane-name: 128px;
+    --lane-duration: 104px;
+    --lane-gap: var(--space-3);
 }
 
-.flowItem {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
+.lane {
+    display: grid;
+    grid-template-columns: var(--lane-name) minmax(0, 1fr) var(--lane-duration);
+    gap: var(--lane-gap);
+    align-items: center;
     width: 100%;
-    padding: var(--space-2) 0;
+    padding: var(--space-2) var(--space-1);
     border: 0;
+    border-radius: var(--radius-sm);
     background: none;
     color: var(--color-text);
     text-align: left;
 }
 
-.flowChild {
-    padding-left: var(--space-4);
-}
-
-button.flowItem {
-    border-radius: var(--radius-sm);
+button.lane {
     cursor: pointer;
     transition: background-color var(--duration-fast) var(--easing-standard);
 }
 
-button.flowItem:hover {
+button.lane:hover {
     background: var(--color-surface-hover);
 }
 
-button.flowItem:focus-visible {
+button.lane:focus-visible {
     outline: var(--focus-ring-width) solid var(--focus-ring-color);
     outline-offset: var(--focus-ring-offset);
 }
 
-.flowLine {
+.laneName {
     display: flex;
-    justify-content: space-between;
-    gap: var(--space-3);
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-sm);
+    flex-direction: column;
+    min-width: 0;
 }
 
-.flowLabel {
-    min-width: 0;
+.laneTitle,
+.laneSubtitle {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.flowRoot .flowLabel {
-    font-weight: var(--font-weight-bold);
+.laneTitle {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+}
+
+.laneSubtitle {
+    color: var(--color-text-muted);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+}
+
+.laneTrack {
+    position: relative;
+    height: 10px;
+    border-radius: var(--radius-full);
+    background: var(--color-surface-muted);
+}
+
+.segment {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(var(--seg-start) * 100%);
+    width: max(calc(var(--seg-width) * 100%), 2px);
+    border-radius: var(--radius-full);
+    background: var(--seg-color);
+}
+
+.seg_work {
+    --seg-color: var(--color-primary);
+}
+
+.seg_wait {
+    --seg-color: var(--color-border-strong);
+}
+
+.segCall_neutral {
+    --seg-color: var(--color-secondary);
+}
+
+.segCall_warning {
+    --seg-color: var(--color-warning);
+}
+
+.segCall_danger {
+    --seg-color: var(--color-danger);
 }
 
 .flowDuration {
-    flex: none;
-    font-family: var(--font-family-base);
+    font-size: var(--font-size-sm);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
 }
 
 .flowDanger {
@@ -196,12 +246,38 @@ button.flowItem:focus-visible {
     color: var(--color-warning-strong);
 }
 
+/* 눈금은 레인의 막대 칸에만 맞춘다 */
 .axis {
     display: flex;
     justify-content: space-between;
+    padding: 0 calc(var(--space-1) + 104px + var(--space-3)) 0 calc(var(--space-1) + 128px + var(--space-3));
     color: var(--color-text-muted);
     font-size: var(--font-size-xs);
     font-variant-numeric: tabular-nums;
+}
+
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+    margin: var(--space-3) 0 0;
+    padding: 0;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+    list-style: none;
+}
+
+.legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+.legendSwatch {
+    width: 12px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--seg-color);
 }
 
 /* ---------- 연관 목록 ---------- */

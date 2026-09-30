@@ -77,7 +77,7 @@ export const StackToggle: TStory = {
 /** F8: 호출 흐름의 외부 호출·연관 목록을 누르면 그 상세로 */
 export const Navigate: TStory = {
     play: async ({ canvas, userEvent, args }) => {
-        await userEvent.click(canvas.getByRole('button', { name: /pg-gateway:9000\/payments\/7781\/status/ }))
+        await userEvent.click(canvas.getByRole('button', { name: /pg-gateway:9000 GET \/payments\/7781\/status/ }))
         await expect(args.onNavigate).toHaveBeenCalledWith(paymentCall.id)
         await userEvent.click(canvas.getByRole('button', { name: /\/internal\/payments\/7781/ }))
         await expect(args.onNavigate).toHaveBeenCalledTimes(2)
@@ -162,6 +162,8 @@ export const BackgroundCall: TStory = {
     args: { detail: makeDetail(makeOutbound(null, { statusCode: 200 })) },
     play: async ({ canvas }) => {
         await expect(canvas.getByText('보낸 요청 (백그라운드)')).toBeVisible()
+        // F5b: 보낸 받은 요청이 없는 백그라운드 호출은 호출 흐름을 그리지 않는다
+        await expect(canvas.queryByRole('heading', { name: '호출 흐름' })).toBeNull()
     },
 }
 
@@ -176,5 +178,26 @@ export const NotFound: TStory = {
     args: { detail: null },
     play: async ({ canvas }) => {
         await expect(canvas.getByRole('status')).toHaveTextContent('이 요청을 찾을 수 없어요')
+    },
+}
+
+/** F5·F5a: 서버별 레인 — 내 서버 · 보낸 대상, 누가 시간을 썼는지 한 문장 */
+export const FlowLanes: TStory = {
+    play: async ({ canvas }) => {
+        await expect(canvas.getByText('3.0초 중 3.0초는 pg-gateway:9000 응답을 기다렸어요')).toBeVisible()
+        await expect(canvas.getByText('내 서버', { selector: '*' })).toBeVisible()
+        // 지금 보고 있는 내 서버 레인은 누를 수 없고, 보낸 요청 레인은 누를 수 있다
+        await expect(canvas.queryByRole('button', { name: /^내 서버/ })).toBeNull()
+        await expect(canvas.getByRole('button', { name: /^pg-gateway:9000/ })).toBeVisible()
+    },
+}
+
+/** F5b: 보낸 요청이 없어도 호출 흐름을 보여 준다 (원인이 내 서버 안쪽이라는 뜻) */
+export const NoOutboundCalls: TStory = {
+    args: { detail: makeDetail(makeRow({ statusCode: 200, durationMs: 3000 })) },
+    play: async ({ canvas }) => {
+        await expect(canvas.getByRole('heading', { name: '호출 흐름' })).toBeVisible()
+        await expect(canvas.getByText('보낸 요청 없음')).toBeVisible()
+        await expect(canvas.getByText('보낸 요청 없이 내 서버가 3.0초 동안 직접 처리했어요')).toBeVisible()
     },
 }
