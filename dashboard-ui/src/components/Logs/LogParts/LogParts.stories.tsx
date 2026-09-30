@@ -43,11 +43,11 @@ export const NestedCall: TStory = {
     },
 }
 
-/** C6: 자식이 트리에 안 보이면 외부 호출 N 태그 */
+/** C6: 자식이 트리에 안 보이면 보낸 요청 N 태그 */
 export const WithChildCount: TStory = {
     args: { row: makeRow({ childCount: 2 }), isChildCountShown: true },
     play: async ({ canvas }) => {
-        await expect(canvas.getByText('외부 호출 2')).toBeVisible()
+        await expect(canvas.getByText('보낸 요청 2')).toBeVisible()
     },
 }
 
@@ -59,7 +59,7 @@ export const Mock: TStory = {
     },
 }
 
-/** 연관 목록: 들어온 요청 앞에 [서비스] */
+/** 연관 목록: 받은 요청 앞에 [서비스] */
 export const WithService: TStory = {
     args: { row: makeRow({ serviceName: 'pay-api' }), isServiceShown: true },
     play: async ({ canvas }) => {

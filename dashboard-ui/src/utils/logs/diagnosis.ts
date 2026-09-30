@@ -99,7 +99,7 @@ export function getResultBox(row: ILogRow): IResultBox {
         }
         return {
             tone: 'danger',
-            label: row.kind === 'OUTBOUND' ? '외부 호출 실패' : '예외 발생 · 서버 오류',
+            label: row.kind === 'OUTBOUND' ? '보낸 요청 실패' : '예외 발생 · 서버 오류',
         }
     }
     if (code === null) return { tone: 'danger', label: '응답 없음' }

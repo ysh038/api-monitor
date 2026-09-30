@@ -10,7 +10,7 @@ const meta = {
     args: {
         items: [
             { key: 'status', label: '상태', value: '500 Internal Server Error', tone: 'danger' },
-            { key: 'kind', label: '방향', value: '들어온 요청' },
+            { key: 'kind', label: '방향', value: '받은 요청' },
             { key: 'time', label: '시각', value: '9월 29일 오전 09:08:46.227' },
             { key: 'duration', label: '걸린 시간', value: '3.0초', tone: 'danger' },
             { key: 'ex', label: '예외', value: 'ResourceAccessException' },

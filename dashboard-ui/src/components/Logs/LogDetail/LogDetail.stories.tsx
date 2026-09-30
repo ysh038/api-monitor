@@ -151,7 +151,7 @@ export const OutboundCall: TStory = {
     },
     play: async ({ canvas, userEvent, args }) => {
         await expect(canvas.getByText('pg-gateway:9000에서 응답을 받지 못했어요')).toBeVisible()
-        await expect(canvas.getByText('외부 호출 실패')).toBeVisible()
+        await expect(canvas.getByText('보낸 요청 실패')).toBeVisible()
         await expect(canvas.getByText('부모 requestId')).toBeVisible()
         await userEvent.click(canvas.getByRole('button', { name: /GET \/api\/v1\/payments\/7781/ }))
         await expect(args.onNavigate).toHaveBeenCalledWith(payment.id)
@@ -161,7 +161,7 @@ export const OutboundCall: TStory = {
 export const BackgroundCall: TStory = {
     args: { detail: makeDetail(makeOutbound(null, { statusCode: 200 })) },
     play: async ({ canvas }) => {
-        await expect(canvas.getByText('외부 호출 (백그라운드)')).toBeVisible()
+        await expect(canvas.getByText('보낸 요청 (백그라운드)')).toBeVisible()
     },
 }
 

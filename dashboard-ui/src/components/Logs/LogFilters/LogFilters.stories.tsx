@@ -35,7 +35,7 @@ export const Default: TStory = {
             'aria-pressed',
             'true',
         )
-        await userEvent.click(canvas.getByRole('button', { name: '외부 호출' }))
+        await userEvent.click(canvas.getByRole('button', { name: '보낸 요청' }))
         await expect(args.onKindChange).toHaveBeenCalledWith('OUTBOUND')
         // E2
         await userEvent.click(canvas.getByRole('button', { name: '5xx' }))
@@ -56,7 +56,7 @@ export const MultipleStatuses: TStory = {
         filters: { ...EMPTY_FILTERS, kind: 'INBOUND', statuses: ['4xx', 'none'], isExceptionOnly: true },
     },
     play: async ({ canvas }) => {
-        await expect(canvas.getByRole('button', { name: '들어온 요청' })).toHaveAttribute(
+        await expect(canvas.getByRole('button', { name: '받은 요청' })).toHaveAttribute(
             'aria-pressed',
             'true',
         )

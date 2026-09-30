@@ -6,8 +6,8 @@ import SegmentedControl from './SegmentedControl'
 
 const OPTIONS = [
     { value: '', label: '전체' },
-    { value: 'INBOUND', label: '들어온 요청' },
-    { value: 'OUTBOUND', label: '외부 호출' },
+    { value: 'INBOUND', label: '받은 요청' },
+    { value: 'OUTBOUND', label: '보낸 요청' },
 ]
 
 const meta = {
@@ -27,9 +27,9 @@ export const Default: TStory = {
             'true',
         )
         await expect(
-            canvas.getByRole('button', { name: '외부 호출' }),
+            canvas.getByRole('button', { name: '보낸 요청' }),
         ).toHaveAttribute('aria-pressed', 'false')
-        await userEvent.click(canvas.getByRole('button', { name: '외부 호출' }))
+        await userEvent.click(canvas.getByRole('button', { name: '보낸 요청' }))
         await expect(args.onChange).toHaveBeenCalledWith('OUTBOUND')
     },
 }
@@ -40,7 +40,7 @@ export const Controlled: TStory = {
         return <SegmentedControl {...args} value={value} onChange={setValue} />
     },
     play: async ({ canvas, userEvent }) => {
-        const inbound = canvas.getByRole('button', { name: '들어온 요청' })
+        const inbound = canvas.getByRole('button', { name: '받은 요청' })
         await userEvent.click(inbound)
         await expect(inbound).toHaveAttribute('aria-pressed', 'true')
         await expect(canvas.getByRole('group', { name: '요청 구분' })).toBeVisible()
@@ -64,7 +64,7 @@ export const IndicatorInitial: TStory = {
         const indicator = indicatorOf(group)
         await expect(indicator).not.toBeNull()
         await expect(indicator).toHaveAttribute('aria-hidden', 'true')
-        await expect(rectOf(indicator!)).toEqual(rectOf(canvas.getByRole('button', { name: '외부 호출' })))
+        await expect(rectOf(indicator!)).toEqual(rectOf(canvas.getByRole('button', { name: '보낸 요청' })))
     },
 }
 
@@ -81,11 +81,11 @@ export const IndicatorSlides: TStory = {
         const widthsBefore = buttons.map((b) => rectOf(b).width)
 
         await nextFrames()
-        await userEvent.click(canvas.getByRole('button', { name: '외부 호출' }))
+        await userEvent.click(canvas.getByRole('button', { name: '보낸 요청' }))
         // 전환 도중에는 아직 새 자리에 도착하지 않았다 (순간이동이 아님)
         await expect(getComputedStyle(indicator).transitionProperty).toContain('transform')
         await settle()
-        await expect(rectOf(indicator)).toEqual(rectOf(canvas.getByRole('button', { name: '외부 호출' })))
+        await expect(rectOf(indicator)).toEqual(rectOf(canvas.getByRole('button', { name: '보낸 요청' })))
         await expect(buttons.map((b) => rectOf(b).width)).toEqual(widthsBefore)
     },
 }
@@ -100,7 +100,7 @@ export const IndicatorResizes: TStory = {
                 <button
                     type="button"
                     onClick={() =>
-                        setOptions(OPTIONS.map((o) => (o.value === 'INBOUND' ? { ...o, label: '들어온 요청 (서버로 들어온 것)' } : o)))
+                        setOptions(OPTIONS.map((o) => (o.value === 'INBOUND' ? { ...o, label: '받은 요청 (서버가 받은 것)' } : o)))
                     }
                 >
                     라벨 바꾸기
@@ -113,7 +113,7 @@ export const IndicatorResizes: TStory = {
         await settle()
         const group = canvas.getByRole('group', { name: '요청 구분' })
         await expect(rectOf(indicatorOf(group)!)).toEqual(
-            rectOf(canvas.getByRole('button', { name: '들어온 요청 (서버로 들어온 것)' })),
+            rectOf(canvas.getByRole('button', { name: '받은 요청 (서버가 받은 것)' })),
         )
     },
 }

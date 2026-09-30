@@ -52,7 +52,7 @@ export interface ILogPathProps {
     row: ILogRow
     /** 부모 요청 아래 트리로 붙은 외부 호출 (└ 표시) */
     isNested?: boolean
-    /** 자식 외부 호출이 화면에 안 보일 때 "외부 호출 N" 태그 */
+    /** 자식 외부 호출이 화면에 안 보일 때 "보낸 요청 N" 태그 */
     isChildCountShown?: boolean
     /** 들어온 요청 앞에 [서비스] (연관 목록) */
     isServiceShown?: boolean
@@ -80,7 +80,7 @@ export function LogPath({
             <span className={styles.pathText}>
                 {isOutbound ? (
                     <>
-                        <span className={styles.arrow} title="외부 호출">
+                        <span className={styles.arrow} title="보낸 요청">
                             →
                         </span>{' '}
                         <span className={styles.host}>{row.targetHost ?? ''}</span>
@@ -103,7 +103,7 @@ export function LogPath({
             ) : null}
             {!isOutbound && isChildCountShown && row.childCount > 0 ? (
                 <Badge appearance="soft" tone="info" size="sm">
-                    외부 호출 {row.childCount}
+                    보낸 요청 {row.childCount}
                 </Badge>
             ) : null}
         </span>

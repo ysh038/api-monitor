@@ -52,7 +52,7 @@ export const hasAnyFilter = (f: ILogFilters) =>
 export function getScopeLabel(f: ILogFilters): string | null {
     const labels: string[] = []
     if (f.service) labels.push(`서비스: ${f.service}`)
-    if (f.host) labels.push(`외부 호출 대상: ${f.host}`)
+    if (f.host) labels.push(`보낸 대상: ${f.host}`)
     return labels.length ? labels.join(' · ') : null
 }
 

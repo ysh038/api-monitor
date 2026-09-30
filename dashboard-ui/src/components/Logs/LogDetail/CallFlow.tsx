@@ -27,7 +27,7 @@ function CallFlow({ root, calls, currentId, onNavigate }: ICallFlowProps) {
     const flow = useMemo(() => buildCallFlow(root, calls), [root, calls])
     return (
         <>
-            <SectionHeader title="호출 흐름" level={3} size="md" aside={`외부 호출 ${calls.length}건`} />
+            <SectionHeader title="호출 흐름" level={3} size="md" aside={`보낸 요청 ${calls.length}건`} />
             <ul className={styles.flow}>
                 {flow.bars.map((bar) => {
                     const content = (

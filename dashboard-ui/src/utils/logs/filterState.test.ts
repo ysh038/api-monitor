@@ -21,7 +21,7 @@ const filters = (overrides: Partial<ILogFilters> = {}): ILogFilters => ({
 })
 
 describe('필터 상태 전이 (E4)', () => {
-    it('호스트를 고르면 외부 호출 탭이 되고 서비스는 유지된다', () => {
+    it('호스트를 고르면 보낸 요청 탭이 되고 서비스는 유지된다', () => {
         expect(selectHost(filters({ service: 'order-api' }), 'pg:9000')).toEqual(
             filters({ service: 'order-api', host: 'pg:9000', kind: 'OUTBOUND' }),
         )
@@ -33,7 +33,7 @@ describe('필터 상태 전이 (E4)', () => {
         ).toEqual(filters({ kind: 'OUTBOUND' }))
     })
 
-    it('외부 호출이 아닌 구분으로 바꾸면 호스트가 해제된다', () => {
+    it('보낸 요청이 아닌 구분으로 바꾸면 호스트가 해제된다', () => {
         const base = filters({ host: 'pg:9000', kind: 'OUTBOUND' })
         expect(changeKind(base, 'INBOUND')).toEqual(filters({ kind: 'INBOUND' }))
         expect(changeKind(base, '')).toEqual(filters())
@@ -68,9 +68,9 @@ describe('필터 상태 전이 (E4)', () => {
     it('E7: 범위 안내 문구', () => {
         expect(getScopeLabel(filters())).toBeNull()
         expect(getScopeLabel(filters({ service: 'a', host: 'h' }))).toBe(
-            '서비스: a · 외부 호출 대상: h',
+            '서비스: a · 보낸 대상: h',
         )
-        expect(getScopeLabel(filters({ host: 'h' }))).toBe('외부 호출 대상: h')
+        expect(getScopeLabel(filters({ host: 'h' }))).toBe('보낸 대상: h')
     })
 })
 

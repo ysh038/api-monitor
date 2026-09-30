@@ -9,8 +9,8 @@ import styles from './LogFilters.module.css'
 
 const KIND_OPTIONS: { value: TLogKind | ''; label: string }[] = [
     { value: '', label: '전체' },
-    { value: 'INBOUND', label: '들어온 요청' },
-    { value: 'OUTBOUND', label: '외부 호출' },
+    { value: 'INBOUND', label: '받은 요청' },
+    { value: 'OUTBOUND', label: '보낸 요청' },
 ]
 
 const STATUS_CHIPS: {

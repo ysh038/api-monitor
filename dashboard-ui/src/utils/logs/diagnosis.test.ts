@@ -118,7 +118,7 @@ describe('결과 박스 (F7)', () => {
         [
             '외부 호출 예외',
             makeOutbound(null, { statusCode: null, exceptionClass: 'a.X' }),
-            { tone: 'danger', label: '외부 호출 실패' },
+            { tone: 'danger', label: '보낸 요청 실패' },
         ],
         [
             '서버 예외',

@@ -53,9 +53,9 @@ export const Outline: TStory = {
     args: { appearance: 'outline', tone: 'neutral', size: 'sm', children: '백그라운드' },
 }
 
-/** 외부 호출 N 태그 */
+/** 보낸 요청 N 태그 */
 export const Info: TStory = {
-    args: { appearance: 'soft', tone: 'info', size: 'sm', children: '외부 호출 2' },
+    args: { appearance: 'soft', tone: 'info', size: 'sm', children: '보낸 요청 2' },
 }
 
 export const AllTones: TStory = {

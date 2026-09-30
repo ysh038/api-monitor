@@ -7,7 +7,7 @@ const meta = {
     title: 'Atoms/Notice',
     component: Notice,
     tags: ['autodocs'],
-    args: { children: '서비스: order-api · 외부 호출 대상: pg-gateway:9000', tone: 'info' },
+    args: { children: '서비스: order-api · 보낸 대상: pg-gateway:9000', tone: 'info' },
 } satisfies Meta<typeof Notice>
 
 export default meta

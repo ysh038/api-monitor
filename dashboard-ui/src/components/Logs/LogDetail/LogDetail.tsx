@@ -40,9 +40,9 @@ const valueTone = (tone: string): IKeyValueItem['tone'] =>
 
 function kindLabel(detail: ILogDetail): string {
     if (detail.kind === 'OUTBOUND') {
-        return detail.parentRequestId ? '외부 호출' : '외부 호출 (백그라운드)'
+        return detail.parentRequestId ? '보낸 요청' : '보낸 요청 (백그라운드)'
     }
-    return detail.isAsync ? '들어온 요청 · 비동기/SSE' : '들어온 요청'
+    return detail.isAsync ? '받은 요청 · 비동기/SSE' : '받은 요청'
 }
 
 function metaItems(detail: ILogDetail, onCopy?: (value: string) => void): IKeyValueItem[] {
@@ -78,7 +78,7 @@ function metaItems(detail: ILogDetail, onCopy?: (value: string) => void): IKeyVa
             ? [{ key: 'exception', label: '예외', value: shortClassName(detail.exceptionClass) }]
             : []),
         isOutbound
-            ? { key: 'id', label: '호출 ID', value: copy(detail.requestId, '호출 ID') }
+            ? { key: 'id', label: '보낸 요청 ID', value: copy(detail.requestId, '보낸 요청 ID') }
             : { key: 'id', label: 'requestId', value: copy(detail.requestId, 'requestId') },
         isOutbound
             ? {

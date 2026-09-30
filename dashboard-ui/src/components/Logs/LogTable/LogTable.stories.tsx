@@ -83,7 +83,7 @@ export const Selected: TStory = {
     },
 }
 
-/** C6·C7: 백그라운드 · 외부 호출 N · MOCK */
+/** C6·C7: 백그라운드 · 보낸 요청 N · MOCK */
 export const Tags: TStory = {
     args: {
         rows: [
@@ -94,7 +94,7 @@ export const Tags: TStory = {
     },
     play: async ({ canvas }) => {
         await expect(canvas.getByText('백그라운드')).toBeVisible()
-        await expect(canvas.getByText('외부 호출 3')).toBeVisible()
+        await expect(canvas.getByText('보낸 요청 3')).toBeVisible()
         await expect(canvas.getByText('MOCK')).toBeVisible()
     },
 }
