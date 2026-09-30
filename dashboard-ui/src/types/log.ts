@@ -88,7 +88,6 @@ export interface IHealth {
 export type TStatusFilter = '2xx' | '4xx' | '5xx' | 'none'
 
 export interface ILogFilters {
-    host: string
     kind: TLogKind | ''
     statuses: TStatusFilter[]
     q: string

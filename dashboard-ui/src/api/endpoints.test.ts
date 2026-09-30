@@ -35,7 +35,6 @@ describe('쿼리스트링 (A2)', () => {
         expect(
             buildLogsUrl(
                 {
-                    host: 'pg:9000',
                     kind: 'OUTBOUND',
                     statuses: ['5xx', 'none'],
                     q: 'a b',
@@ -43,7 +42,7 @@ describe('쿼리스트링 (A2)', () => {
                 { afterId: 7, limit: 500 },
             ),
         ).toBe(
-            'api/logs?host=pg%3A9000&kind=OUTBOUND&status=5xx%2Cnone&q=a+b&afterId=7&limit=500',
+            'api/logs?kind=OUTBOUND&status=5xx%2Cnone&q=a+b&afterId=7&limit=500',
         )
     })
 

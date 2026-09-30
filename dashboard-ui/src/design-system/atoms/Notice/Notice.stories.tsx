@@ -7,13 +7,13 @@ const meta = {
     title: 'Atoms/Notice',
     component: Notice,
     tags: ['autodocs'],
-    args: { children: '서비스: order-api · 보낸 대상: pg-gateway:9000', tone: 'info' },
+    args: { children: '검색 조건이 걸려 있어요', tone: 'info' },
 } satisfies Meta<typeof Notice>
 
 export default meta
 type TStory = StoryObj<typeof meta>
 
-/** 필터 범위 안내 줄 (오른쪽에 해제 버튼 자리) */
+/** 오른쪽 끝에 동작 버튼이 있는 안내 줄 */
 export const WithAction: TStory = {
     args: { action: <button type="button">해제</button> },
     play: async ({ canvas }) => {

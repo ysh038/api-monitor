@@ -10,8 +10,6 @@ import {
     RequestTimeline,
     TopBar,
 } from '../components/Logs'
-import Button from '../design-system/atoms/Button'
-import Notice from '../design-system/atoms/Notice'
 import Drawer from '../design-system/organisms/Drawer'
 import { useDashboard } from '../hooks/dashboard'
 
@@ -67,18 +65,6 @@ function DashboardPage() {
                             onToggleStatus={d.toggleStatus}
                             onSearchTextChange={d.setSearchText}
                         />
-                        {d.scopeLabel ? (
-                            <Notice
-                                tone="info"
-                                action={
-                                    <Button variant="link" size="sm" onClick={d.clearScope}>
-                                        해제
-                                    </Button>
-                                }
-                            >
-                                {d.scopeLabel}
-                            </Notice>
-                        ) : null}
                         <RequestTimeline rows={d.rows} selectedId={d.selectedId} onSelect={d.selectRow} />
                     </>
                 }

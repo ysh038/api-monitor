@@ -19,7 +19,6 @@ export interface ILogCursor {
 
 export function buildLogsUrl(filters: ILogFilters, cursor: ILogCursor): string {
     const params = new URLSearchParams()
-    if (filters.host) params.set('host', filters.host)
     if (filters.kind) params.set('kind', filters.kind)
     if (filters.statuses.length) params.set('status', filters.statuses.join(','))
     if (filters.q) params.set('q', filters.q)

@@ -15,11 +15,8 @@ import {
 } from '../../utils/logs/feed'
 import {
     changeKind,
-    clearScope,
-    getScopeLabel,
     hasAnyFilter,
     parseHash,
-    selectHost,
     toggleStatus,
 } from '../../utils/logs/filterState'
 import { getTotalCount } from '../../utils/logs/serviceOptions'
@@ -147,12 +144,9 @@ export function useDashboard() {
         searchText,
         setSearchText,
         hasFilter: hasAnyFilter(filters),
-        scopeLabel: getScopeLabel(filters),
         totalCount: getTotalCount(services.data),
         changeKind: (kind: TLogKind | '') => updateFilters((f) => changeKind(f, kind)),
         toggleStatus: (status: TStatusFilter) => updateFilters((f) => toggleStatus(f, status)),
-        selectHost: (host: string) => updateFilters((f) => selectHost(f, host)),
-        clearScope: () => updateFilters(clearScope),
         // 목록
         rows: feed.rows,
         isLoading: feed.isLoading,
