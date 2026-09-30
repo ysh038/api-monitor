@@ -37,12 +37,7 @@ function DashboardPage() {
             }
             notice={d.devServerNotice ? <DevServerNotice notice={d.devServerNotice} /> : undefined}
             summary={
-                <FailureSummary
-                    rows={d.rows}
-                    selectedHost={d.filters.host}
-                    hasFilter={d.hasFilter}
-                    onSelectHost={d.selectHost}
-                />
+                <FailureSummary />
             }
             overlay={
                 <Drawer
