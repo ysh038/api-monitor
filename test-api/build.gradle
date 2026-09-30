@@ -23,5 +23,5 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
 	// API 모니터 (이 한 줄만 추가)
-	implementation 'io.github.ysh038:api-monitor-spring-boot-starter:1.2.0'
+	implementation 'io.github.ysh038:api-monitor-spring-boot-starter:1.3.0'
 }
