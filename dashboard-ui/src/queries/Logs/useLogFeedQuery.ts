@@ -7,7 +7,13 @@ import {
 import { useCallback, useMemo } from 'react'
 
 import type { ILogFilters, ILogRow } from '../../types/log'
-import { hasMorePages, mergeNewer, PAGE_SIZE, POLL_LIMIT } from '../../utils/logs/feed'
+import {
+    hasMorePages,
+    MAX_FEED_ROWS,
+    mergePolledPages,
+    PAGE_SIZE,
+    POLL_LIMIT,
+} from '../../utils/logs/feed'
 
 import { fetchLogs } from './logsApi'
 import { logsQueryKeys } from './logsQueryKeys'
@@ -17,6 +23,7 @@ type TFeedData = InfiniteData<ILogRow[], number | null>
 /**
  * 로그 목록 (최신순). 첫 페이지 + "더 보기"(beforeId) 는 무한 쿼리 페이지이고,
  * 5초 폴링(afterId)으로 받은 새 행은 캐시 맨 앞에 페이지로 끼워 넣는다.
+ * 폴링 때문에 MAX_FEED_ROWS 를 넘으면 가장 오래된 행부터 뺀다 (spec G4a).
  *
  * 캐시가 폴링으로만 갱신되도록 자동 재요청은 모두 끈다 — 무한 쿼리를 재요청하면
  * 모든 페이지를 다시 받는데, 폴링으로 끼운 페이지 때문에 중복이 생긴다.
@@ -59,11 +66,13 @@ export function useLogFeedQuery(filters: ILogFilters) {
         let newIds: number[] = []
         queryClient.setQueryData<TFeedData>(queryKey, (old) => {
             if (!old) return old
-            const merged = mergeNewer(old.pages.flat(), incoming)
+            const merged = mergePolledPages(old.pages, incoming, MAX_FEED_ROWS)
             newIds = merged.newIds
             if (newIds.length === 0) return old
-            const fresh = merged.rows.slice(0, newIds.length)
-            return { pages: [fresh, ...old.pages], pageParams: [null, ...old.pageParams] }
+            return {
+                pages: merged.pages,
+                pageParams: merged.isTrimmed ? [null] : [null, ...old.pageParams],
+            }
         })
         return newIds
     }, [queryClient, queryKey, filters])

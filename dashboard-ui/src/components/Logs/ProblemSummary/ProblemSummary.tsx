@@ -3,7 +3,12 @@ import { useMemo } from 'react'
 import Badge from '../../../design-system/atoms/Badge'
 import type { ILogRow } from '../../../types/log'
 import { formatCount, formatTime } from '../../../utils/logs/format'
-import { buildHostHealth, buildProblems, type IHostHealth } from '../../../utils/logs/problems'
+import {
+    buildHostHealth,
+    buildProblems,
+    type IHostHealth,
+    problemBasis,
+} from '../../../utils/logs/problems'
 
 import styles from './ProblemSummary.module.css'
 
@@ -35,15 +40,16 @@ function ColumnHead({ title, hiddenCount }: { title: string; hiddenCount: number
 
 /**
  * 문제 요약 — 반복되는 문제 · 외부 연결 상태 (docs/specs/dashboard-problem-summary.md).
- * 지금 불러온 행만으로 계산하는 "최근 문제" 요약이라 기준 건수를 함께 밝힌다.
+ * 불러온 행 중 항상 최신 100건으로 계산하는 "최근 문제" 요약이라 기준 건수를 함께 밝힌다.
  */
 function ProblemSummary({ rows, onSelect }: IProblemSummaryProps) {
-    const problems = useMemo(() => buildProblems(rows), [rows])
-    const hosts = useMemo(() => buildHostHealth(rows), [rows])
+    const basis = useMemo(() => problemBasis(rows), [rows])
+    const problems = useMemo(() => buildProblems(basis), [basis])
+    const hosts = useMemo(() => buildHostHealth(basis), [basis])
 
     return (
         <div className={styles.summary}>
-            <p className={styles.basis}>지금 목록의 최근 {formatCount(rows.length)}건 기준</p>
+            <p className={styles.basis}>최근 {formatCount(basis.length)}건 기준</p>
             <div className={styles.columns}>
                 <section className={styles.column} aria-label="반복되는 문제">
                     <ColumnHead title="반복되는 문제" hiddenCount={problems.length - MAX_ITEMS} />

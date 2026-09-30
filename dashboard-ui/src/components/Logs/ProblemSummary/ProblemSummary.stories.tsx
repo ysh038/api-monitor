@@ -21,7 +21,7 @@ type TStory = StoryObj<typeof meta>
 /** P6·H4·L1: 반복되는 문제(최근 순, 최대 5개) · 외부 연결 상태 · 기준 안내 */
 export const Default: TStory = {
     play: async ({ canvas, userEvent, args }) => {
-        await expect(canvas.getByText('지금 목록의 최근 14건 기준')).toBeVisible()
+        await expect(canvas.getByText('최근 14건 기준')).toBeVisible()
 
         const problems = within(canvas.getByRole('region', { name: '반복되는 문제' }))
         const items = problems.getAllByRole('button')
@@ -92,5 +92,19 @@ export const StableHeight: TStory = {
         await expect(full).toBeGreaterThan(150)
         await expect(heightOf(canvas.getByTestId('one'))).toBe(full)
         await expect(heightOf(canvas.getByTestId('empty'))).toBe(full)
+    },
+}
+
+/** L1: 불러온 행이 100건을 넘어도 최신 100건만 본다 — 101번째 이후의 문제는 세지 않는다 */
+export const LatestHundredOnly: TStory = {
+    args: {
+        rows: [
+            ...Array.from({ length: 100 }, (_, i) => makeRow({ id: 2000 - i, statusCode: 200, createdAt: BASE_TIME - i * 1000 })),
+            makeRow({ id: 1, statusCode: 500, path: '/api/v1/old-failure', createdAt: BASE_TIME - 999_000 }),
+        ],
+    },
+    play: async ({ canvas }) => {
+        await expect(canvas.getByText('최근 100건 기준')).toBeVisible()
+        await expect(canvas.getByText('최근 요청에서 문제가 없어요')).toBeVisible()
     },
 }

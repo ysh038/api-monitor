@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { BASE_TIME, makeOutbound, makeRow, makeScenario } from '../../mocks/logFixtures'
 
-import { buildHostHealth, buildProblems, normalizePath } from './problems'
+import { buildHostHealth, buildProblems, normalizePath, problemBasis } from './problems'
 
 const SEC = 1000
 
@@ -172,5 +172,16 @@ describe('buildHostHealth — 외부 연결 상태', () => {
 
     it('받은 요청만 있으면 빈 목록', () => {
         expect(buildHostHealth([makeRow()])).toEqual([])
+    })
+})
+
+describe('요약 기준 행 (L1)', () => {
+    it('항상 최신 100건, 적으면 그 수만큼', () => {
+        const many = Array.from({ length: 150 }, (_, i) => makeRow({ id: 1000 - i }))
+        const basis = problemBasis(many)
+        expect(basis).toHaveLength(100)
+        expect(basis[0].id).toBe(1000)
+        expect(basis.at(-1)?.id).toBe(901)
+        expect(problemBasis(many.slice(0, 14))).toHaveLength(14)
     })
 })

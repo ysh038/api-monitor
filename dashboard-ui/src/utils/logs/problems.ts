@@ -35,6 +35,12 @@ export interface IHostHealth {
     latestId: number
 }
 
+/** 요약은 불러온 행 중 항상 최신 이만큼으로 계산한다 (spec L1) */
+export const PROBLEM_BASIS_ROWS = 100
+
+/** 요약 기준 행 — 최신 100건 (적으면 전부). 목록은 최신순이다 */
+export const problemBasis = (rows: ILogRow[]) => rows.slice(0, PROBLEM_BASIS_ROWS)
+
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 const LONG_HEX = /^[0-9a-f]{16,}$/i
 const NUMBER = /^\d+$/
