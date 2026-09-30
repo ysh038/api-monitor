@@ -1,0 +1,47 @@
+{
+    "packageManager": "npm",
+    "checks": [
+        {
+            "id": "design-ref",
+            "command": "node .harness/gates/design-ref-check.mjs"
+        },
+        {
+            "id": "storybook",
+            "command": "node .harness/gates/storybook-check.mjs"
+        },
+        {
+            "id": "typecheck",
+            "command": "npx tsc --noEmit"
+        },
+        {
+            "id": "lint",
+            "command": "npm run lint"
+        },
+        {
+            "id": "stylelint",
+            "command": "npx stylelint \"src/**/*.css\""
+        },
+        {
+            "id": "test",
+            "command": "npx vitest --project=unit --run"
+        },
+        {
+            "id": "test-storybook",
+            "command": "npx vitest --project=storybook --run"
+        },
+        {
+            "id": "build",
+            "command": "npm run build"
+        }
+    ],
+    "storybook": "ready",
+    "mode": "inspire",
+    "fidelity": "inspire",
+    "style": {
+        "componentDeclaration": "function",
+        "componentExport": "default",
+        "styling": "css-modules"
+    },
+    "disclaimerAcceptedAt": null,
+    "lang": "ko"
+}

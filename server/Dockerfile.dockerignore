@@ -1,0 +1,13 @@
+# 빌드 기준이 저장소 루트이므로 필요한 것만 보낸다
+*
+!server/package.json
+!server/package-lock.json
+!server/src
+!dashboard-ui
+dashboard-ui/node_modules
+dashboard-ui/dist
+dashboard-ui/storybook-static
+dashboard-ui/.claude
+dashboard-ui/.cursor
+dashboard-ui/.harness
+dashboard-ui/docs

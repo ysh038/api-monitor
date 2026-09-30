@@ -16,7 +16,16 @@ function pick(envName, fileKey, fallback) {
   return fallback;
 }
 
+// 대시보드 화면 폴더: STATIC_DIR > 저장소의 dashboard-ui/dist (로컬 개발) > server/public (도커 이미지 안)
+function resolveStaticDir() {
+  if (process.env.STATIC_DIR) return path.resolve(process.env.STATIC_DIR);
+  const repoDist = path.join(__dirname, '..', '..', 'dashboard-ui', 'dist');
+  if (fs.existsSync(path.join(repoDist, 'index.html'))) return repoDist;
+  return path.join(__dirname, '..', 'public');
+}
+
 module.exports = {
+  staticDir: resolveStaticDir(),
   // npm run dev (--dev) 로 띄웠을 때만 true: 화면에 DEV 표시와 Mock 데이터 기능이 켜진다
   dev: process.argv.includes('--dev') || process.env.API_MONITOR_DEV === '1',
   port: Number(pick('PORT', 'port', 8081)),

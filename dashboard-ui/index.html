@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API Monitor</title>
+    <script>
+      // 첫 화면이 그려지기 전에 테마를 적용한다 (다크 선택 시 흰 화면 번쩍임 방지).
+      // 키·규칙은 src/utils/theme/theme.ts 와 같다. 이후 동기화는 useTheme 이 맡는다.
+      (function () {
+        var preference = null
+        try {
+          preference = window.localStorage.getItem('api-monitor.theme')
+        } catch (e) {}
+        var isDark =
+          preference === 'dark' ||
+          (preference !== 'light' &&
+            !!window.matchMedia &&
+            window.matchMedia('(prefers-color-scheme: dark)').matches)
+        document.documentElement.dataset.theme = isDark ? 'dark' : 'light'
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

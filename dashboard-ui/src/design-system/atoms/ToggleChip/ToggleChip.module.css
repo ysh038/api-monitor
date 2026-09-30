@@ -1,0 +1,114 @@
+.chip {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    background: var(--color-surface-muted);
+    color: var(--color-text);
+    font-size: var(--font-size-md);
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+        background-color var(--duration-base) var(--easing-standard),
+        border-color var(--duration-base) var(--easing-standard),
+        color var(--duration-base) var(--easing-standard);
+}
+
+/* 굵은 글자 폭을 미리 잡아 둔다 — 켜져서 굵어져도 칩 폭이 그대로다 (dashboard-stable-layout L6) */
+.label {
+    display: inline-flex;
+    flex-direction: column;
+}
+
+.label::after {
+    content: attr(data-label);
+    height: 0;
+    overflow: hidden;
+    font-weight: var(--font-weight-semibold);
+    visibility: hidden;
+    user-select: none;
+}
+
+.chip:hover {
+    border-color: var(--color-border-strong);
+}
+
+.chip:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+}
+
+.chip[aria-pressed='true'] {
+    border-color: var(--chip-base);
+    background: var(--chip-subtle);
+    color: var(--chip-strong);
+    font-weight: var(--font-weight-semibold);
+}
+
+/*
+ * plain — 회색 트랙 안에 묶어 쓸 때 (dashboard-react-migration E2a).
+ * 꺼지면 배경 없이 트랙 색이 비치고, 켜지면 상태 색. 테두리 대신 안쪽 그림자로 외곽선을 그려
+ * 세그먼트 버튼과 높이가 같다.
+ */
+.plain {
+    border: 0;
+    border-radius: calc(var(--radius-md) - 2px);
+    background: transparent;
+    transition:
+        background-color var(--duration-base) var(--easing-standard),
+        box-shadow var(--duration-base) var(--easing-standard),
+        color var(--duration-base) var(--easing-standard);
+}
+
+.plain:hover {
+    background: var(--color-surface);
+}
+
+.plain[aria-pressed='true'] {
+    box-shadow: inset 0 0 0 1px var(--chip-base);
+}
+
+.plain:focus-visible {
+    outline-offset: 0;
+}
+
+.dot {
+    flex: none;
+    width: 7px;
+    height: 7px;
+    border-radius: var(--radius-full);
+    background: var(--chip-base);
+}
+
+.neutral {
+    --chip-subtle: var(--color-surface-hover);
+    --chip-base: var(--color-secondary);
+    --chip-strong: var(--color-text);
+}
+
+.success {
+    --chip-subtle: var(--color-success-subtle);
+    --chip-base: var(--color-success);
+    --chip-strong: var(--color-success-strong);
+}
+
+.info {
+    --chip-subtle: var(--color-info-subtle);
+    --chip-base: var(--color-info);
+    --chip-strong: var(--color-info-strong);
+}
+
+.warning {
+    --chip-subtle: var(--color-warning-subtle);
+    --chip-base: var(--color-warning);
+    --chip-strong: var(--color-warning-strong);
+}
+
+.danger {
+    --chip-subtle: var(--color-danger-subtle);
+    --chip-base: var(--color-danger);
+    --chip-strong: var(--color-danger-strong);
+}

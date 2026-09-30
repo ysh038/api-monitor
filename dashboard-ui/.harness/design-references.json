@@ -1,0 +1,23 @@
+{
+    "version": 1,
+    "mode": "inspire",
+    "fidelity": "inspire",
+    "disclaimerAcceptedAt": null,
+    "sources": [],
+    "entries": [
+        {
+            "id": "page-dashboard",
+            "kind": "page",
+            "codePath": "src/pages/DashboardPage.tsx",
+            "ref": {
+                "kind": "image",
+                "url": null,
+                "source": "채팅 첨부 이미지 (2026-09-29) — 참고 디자인이자 기능 기획안. 분석 내용은 docs/specs/dashboard-react-migration.md 의 '참고 이미지 분석' 절"
+            },
+            "status": "linked",
+            "lastReadAt": "2026-09-29T00:00:00Z",
+            "lastReadOk": true,
+            "notes": "기존 server/public 대시보드 기능은 그대로 옮기고, 이미지에 있는 기능(요약 헤더, 외부 서버 카드, 시간대별 막대, 성공 요청 묶기, 호출 트리, 소요 막대, 원인 진단·확인 가이드, 호출 흐름)을 추가한다."
+        }
+    ]
+}

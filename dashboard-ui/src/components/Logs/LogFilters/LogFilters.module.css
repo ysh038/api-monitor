@@ -1,0 +1,22 @@
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+/* 상태 칩 묶음 — 옆 세그먼트(SegmentedControl .group)와 같은 트랙 한 장 (E2a) */
+.chips {
+    display: inline-flex;
+    flex: none;
+    flex-wrap: wrap;
+    gap: 2px;
+    padding: 3px;
+    border-radius: var(--radius-md);
+    background: var(--color-surface-muted);
+}
+
+.search {
+    flex: 1 1 240px;
+    min-width: 200px;
+}

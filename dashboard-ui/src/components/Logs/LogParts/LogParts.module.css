@@ -1,0 +1,73 @@
+.path {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+    max-width: 100%;
+}
+
+.pathText {
+    overflow: hidden;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.isWrapping .pathText {
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.nest {
+    flex: none;
+    color: var(--color-text-muted);
+    font-family: var(--font-family-mono);
+}
+
+.arrow {
+    color: var(--color-info-strong);
+    font-weight: var(--font-weight-bold);
+}
+
+.host {
+    color: var(--color-text-muted);
+}
+
+.service {
+    color: var(--color-text-muted);
+    font-family: var(--font-family-base);
+}
+
+.exception {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    font-size: var(--font-size-sm);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
+}
+
+.exceptionShort {
+    display: none;
+}
+
+.warning {
+    color: var(--color-warning-strong);
+}
+
+.danger {
+    color: var(--color-danger-strong);
+}
+
+/* 좁은 화면에서는 예외 이름 대신 "예외" (기존 대시보드와 같은 1180px 기준) */
+@media (max-width: 1180px) {
+    .isCollapsible .exceptionLong {
+        display: none;
+    }
+
+    .isCollapsible .exceptionShort {
+        display: inline;
+    }
+}

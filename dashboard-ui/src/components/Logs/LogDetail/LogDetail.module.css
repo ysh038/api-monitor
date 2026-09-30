@@ -1,0 +1,374 @@
+.detail {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-6) var(--space-5) var(--space-12);
+}
+
+.stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.pillRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    padding-right: var(--space-12);
+}
+
+.headline {
+    margin: 0;
+    color: var(--color-text);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    overflow-wrap: anywhere;
+}
+
+.request {
+    display: flex;
+    gap: var(--space-2);
+    align-items: baseline;
+    margin: 0;
+    color: var(--color-text-muted);
+}
+
+.method {
+    flex: none;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+}
+
+.muted {
+    color: var(--color-text-muted);
+}
+
+/* ---------- 예외 박스 ---------- */
+.exception {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--exception-base);
+    border-radius: var(--radius-md);
+    background: var(--exception-subtle);
+}
+
+.exceptionDanger {
+    --exception-base: var(--color-danger);
+    --exception-subtle: var(--color-danger-subtle);
+    --exception-strong: var(--color-danger-strong);
+}
+
+.exceptionWarning {
+    --exception-base: var(--color-warning);
+    --exception-subtle: var(--color-warning-subtle);
+    --exception-strong: var(--color-warning-strong);
+}
+
+.exceptionLabel {
+    color: var(--exception-strong);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.03em;
+}
+
+.exceptionClass {
+    color: var(--color-text);
+    font-family: var(--font-family-mono);
+    font-weight: var(--font-weight-bold);
+    overflow-wrap: anywhere;
+}
+
+.exceptionMessage {
+    margin: 0;
+    color: var(--color-text);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.causes {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.cause {
+    margin-left: var(--space-1);
+    padding: var(--space-1) 0 var(--space-1) var(--space-3);
+    border-left: 2px solid var(--exception-base);
+    color: var(--color-text);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    overflow-wrap: anywhere;
+}
+
+.causeMessage {
+    color: var(--color-text-muted);
+}
+
+.appFrame {
+    color: var(--color-primary-strong);
+    font-weight: var(--font-weight-semibold);
+}
+
+.toggle {
+    align-self: flex-start;
+}
+
+/* ---------- 호출 흐름 — 서버별 레인 (spec F5) ---------- */
+.flowSummary {
+    margin: 0 0 var(--space-2);
+    color: var(--color-text);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+}
+
+.flow {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    --lane-name: 128px;
+    --lane-duration: 104px;
+    --lane-gap: var(--space-3);
+}
+
+.lane {
+    display: grid;
+    grid-template-columns: var(--lane-name) minmax(0, 1fr) var(--lane-duration);
+    gap: var(--lane-gap);
+    align-items: center;
+    width: 100%;
+    padding: var(--space-2) var(--space-1);
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: none;
+    color: var(--color-text);
+    text-align: left;
+}
+
+button.lane {
+    cursor: pointer;
+    transition: background-color var(--duration-fast) var(--easing-standard);
+}
+
+button.lane:hover {
+    background: var(--color-surface-hover);
+}
+
+button.lane:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+}
+
+.laneName {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.laneTitle,
+.laneSubtitle {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.laneTitle {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+}
+
+.laneSubtitle {
+    color: var(--color-text-muted);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+}
+
+.laneTrack {
+    position: relative;
+    height: 10px;
+    border-radius: var(--radius-full);
+    background: var(--color-surface-muted);
+}
+
+.segment {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(var(--seg-start) * 100%);
+    width: max(calc(var(--seg-width) * 100%), 2px);
+    border-radius: var(--radius-full);
+    background: var(--seg-color);
+}
+
+.seg_work {
+    --seg-color: var(--color-primary);
+}
+
+.seg_wait {
+    --seg-color: var(--color-border-strong);
+}
+
+.segCall_neutral {
+    --seg-color: var(--color-secondary);
+}
+
+.segCall_warning {
+    --seg-color: var(--color-warning);
+}
+
+.segCall_danger {
+    --seg-color: var(--color-danger);
+}
+
+.flowDuration {
+    font-size: var(--font-size-sm);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+.flowDanger {
+    color: var(--color-danger-strong);
+}
+
+.flowWarning {
+    color: var(--color-warning-strong);
+}
+
+/* 눈금은 레인의 막대 칸에만 맞춘다 */
+.axis {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 calc(var(--space-1) + 104px + var(--space-3)) 0 calc(var(--space-1) + 128px + var(--space-3));
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+    font-variant-numeric: tabular-nums;
+}
+
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+    margin: var(--space-3) 0 0;
+    padding: 0;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+    list-style: none;
+}
+
+.legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+.legendSwatch {
+    width: 12px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--seg-color);
+}
+
+/* ---------- 연관 목록 ---------- */
+.related {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    list-style: none;
+    overflow: hidden;
+}
+
+.related li + li {
+    border-top: 1px solid var(--color-border);
+}
+
+.relatedItem {
+    display: grid;
+    grid-template-columns: 72px 52px minmax(0, 1fr) auto;
+    gap: var(--space-2);
+    align-items: center;
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    border: 0;
+    background: var(--color-surface);
+    color: var(--color-text);
+    text-align: left;
+    cursor: pointer;
+    transition: background-color var(--duration-fast) var(--easing-standard);
+}
+
+.relatedItem:hover {
+    background: var(--color-surface-hover);
+}
+
+.relatedItem:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+}
+
+.relatedMeta {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+/* ---------- 요청 / 응답 ---------- */
+.panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding-top: var(--space-4);
+}
+
+.panel[hidden] {
+    display: none;
+}
+
+.headers {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+}
+
+.headers th,
+.headers td {
+    padding: var(--space-1) var(--space-2);
+    border-bottom: 1px solid var(--color-border);
+    text-align: left;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+}
+
+.headers th {
+    width: 40%;
+    color: var(--color-text-muted);
+    font-weight: var(--font-weight-normal);
+}
+
+.none {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-style: italic;
+}
+
+.truncated {
+    margin: 0;
+    color: var(--color-warning-strong);
+    font-size: var(--font-size-sm);
+}

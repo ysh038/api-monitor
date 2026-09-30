@@ -1,0 +1,26 @@
+.summary {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.headline,
+.description {
+    margin: 0;
+    overflow: hidden;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.headline {
+    color: var(--color-text);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+}
+
+.description {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-lg);
+}

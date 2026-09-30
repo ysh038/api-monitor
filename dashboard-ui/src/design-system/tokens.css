@@ -1,0 +1,232 @@
+/**
+ * 디자인 토큰 정본 — 색상은 반드시 이 변수들만 사용한다 (stylelint가 원시값을 error 처리).
+ * 존재하지 않는 토큰 이름을 발명하지 말 것. 필요하면 여기와 tokens.ts 양쪽에 먼저 추가한다.
+ *
+ * 2계층 구조 — primitive(원시 램프) → semantic(역할별 별칭, primitive만 참조).
+ * 컴포넌트는 semantic 토큰만 쓴다. 다크 모드는 semantic 별칭이 가리키는 primitive만 바꾼다.
+ *
+ * 테마: <html data-theme="light|dark"> 로 결정한다 (utils/theme · hooks/shared/useTheme · index.html).
+ * "자동" 선택이면 JS 가 OS 설정(prefers-color-scheme)을 보고 속성을 넣어 준다.
+ *
+ * 팔레트 출처: 기존 대시보드 server/public/app.css 의 색상(라이트·다크)을 그대로 옮겼다 (MIGRATION.md).
+ * primary 램프는 app.css 의 --accent(#2f6fed, 다크 #5b8ff5)를 기준으로 채운 것이다.
+ */
+:root {
+    /* ============================================================
+     * PRIMITIVE — 원시 스케일. 컴포넌트·페이지 CSS에서 직접 참조하지 않는다.
+     * ============================================================ */
+
+    /* 브랜드 램프 (50=가장 밝음 → 900=가장 어두움). 600 = app.css --accent */
+    --primitive-primary-50: #eef3fe;
+    --primitive-primary-100: #dce7fd;
+    --primitive-primary-200: #b9cffb;
+    --primitive-primary-300: #8fb1f8;
+    --primitive-primary-400: #5b8ff5; /* app.css 다크 --accent */
+    --primitive-primary-500: #3f7cf0;
+    --primitive-primary-600: #2f6fed; /* app.css --accent */
+    --primitive-primary-700: #245bd0;
+    --primitive-primary-800: #1d4aab;
+    --primitive-primary-900: #183d8a;
+
+    /* 중립 — 라이트 (app.css :root) */
+    --primitive-gray-0: #ffffff; /* --panel */
+    --primitive-gray-50: #f6f7f9; /* --bg */
+    --primitive-gray-100: #f1f3f6; /* --panel-2 */
+    --primitive-gray-200: #e2e5ea; /* --line */
+    --primitive-gray-300: #cdd2da;
+    --primitive-gray-500: #6b7380; /* --muted */
+    --primitive-gray-600: #5f6773; /* 흐린 글자 — --muted 는 회색 바탕 위 대비 4.5:1 미달이라 한 단계 진하게 */
+    --primitive-gray-900: #1c2129; /* --text */
+
+    /* 중립 — 다크 (app.css prefers-color-scheme: dark) */
+    --primitive-night-50: #111418; /* --bg */
+    --primitive-night-100: #181c22; /* --panel */
+    --primitive-night-200: #20252d; /* --panel-2 */
+    --primitive-night-300: #2b313a; /* --line */
+    --primitive-night-400: #3a414c;
+    --primitive-night-600: #8b93a1; /* --muted */
+    --primitive-night-900: #e4e7ec; /* --text */
+
+    /* 상태 램프 — 라이트: 100(배경) / 500(보더·점·막대, app.css --ok/--info/--warn/--err) /
+       700(글자). app.css 색은 옅은 배경 위 글자로 쓰면 WCAG AA 4.5:1 에 못 미쳐 글자용 한 단계를 둔다 */
+    --primitive-success-100: #e5f5ec;
+    --primitive-success-500: #1a8f4c;
+    --primitive-success-700: #157a41;
+    --primitive-info-100: #e6eefb;
+    --primitive-info-500: #2a67c9;
+    --primitive-info-700: #2458ad;
+    --primitive-warning-100: #fdf1dc;
+    --primitive-warning-500: #b26b00;
+    --primitive-warning-700: #8f5600;
+    --primitive-danger-50: #fef6f6; /* 실패 행 배경 (참고 이미지의 옅은 빨강) */
+    --primitive-danger-100: #fce8e8;
+    --primitive-danger-500: #cc2d2d;
+    --primitive-danger-700: #b02424;
+
+    /* 상태 램프 — 다크 */
+    --primitive-success-night-100: #16301f;
+    --primitive-success-night-500: #4cc27f;
+    --primitive-info-night-100: #182640;
+    --primitive-info-night-500: #6e9ff0;
+    --primitive-warning-night-100: #33260f;
+    --primitive-warning-night-500: #f0a93a;
+    --primitive-danger-night-50: #221617;
+    --primitive-danger-night-100: #3a1a1a;
+    --primitive-danger-night-500: #f06565;
+
+    --primitive-black-alpha-25: rgb(0 0 0 / 0.25); /* app.css .backdrop */
+    --primitive-black-alpha-50: rgb(0 0 0 / 0.5);
+
+    /* ============================================================
+     * SEMANTIC — 컴포넌트·페이지 CSS는 이 계층만 참조한다.
+     * ============================================================ */
+
+    /* 브랜드 역할 — 버튼·링크 등 인터랙션 요소의 상태 4종 */
+    --color-primary: var(--primitive-primary-600);
+    --color-primary-hover: var(--primitive-primary-700);
+    --color-primary-pressed: var(--primitive-primary-800);
+    --color-primary-subtle: var(--primitive-primary-50);
+    --color-primary-subtle-hover: var(--primitive-primary-100);
+    --color-primary-strong: var(--primitive-primary-700); /* 링크·옅은 배경 위 글자 */
+    --color-on-primary: var(--primitive-gray-0); /* primary 배경 위에 올리는 텍스트·아이콘 */
+    --color-secondary: var(--primitive-gray-500);
+    --color-secondary-hover: var(--primitive-gray-900);
+
+    /* 표면·배경 */
+    --color-background: var(--primitive-gray-50); /* 페이지 바탕 */
+    --color-surface: var(--primitive-gray-0); /* 카드·패널 */
+    --color-surface-muted: var(--primitive-gray-100); /* 표 머리글·코드 블록 */
+    --color-surface-hover: var(--primitive-gray-100); /* 리스트 행·카드 hover */
+    --color-surface-selected: var(--primitive-primary-50); /* 선택된 행 */
+    --color-surface-danger: var(--primitive-danger-50); /* 실패 행 */
+    --color-border: var(--primitive-gray-200);
+    --color-border-strong: var(--primitive-gray-300);
+    --color-overlay: var(--primitive-black-alpha-25); /* 패널 뒤 배경 */
+
+    /* 텍스트 */
+    --color-text: var(--primitive-gray-900);
+    --color-text-muted: var(--primitive-gray-600);
+    --color-text-disabled: var(--primitive-gray-300);
+    --color-text-inverse: var(--primitive-gray-0);
+
+    /* 상태 — subtle(배경) / base(점·보더·막대) / strong(글자) 3종 세트. 글자에는 strong 을 쓴다 */
+    --color-success-subtle: var(--primitive-success-100);
+    --color-success: var(--primitive-success-500);
+    --color-success-strong: var(--primitive-success-700);
+    --color-warning-subtle: var(--primitive-warning-100);
+    --color-warning: var(--primitive-warning-500);
+    --color-warning-strong: var(--primitive-warning-700);
+    --color-danger-subtle: var(--primitive-danger-100);
+    --color-danger: var(--primitive-danger-500);
+    --color-danger-strong: var(--primitive-danger-700);
+    --color-info-subtle: var(--primitive-info-100);
+    --color-info: var(--primitive-info-500);
+    --color-info-strong: var(--primitive-info-700);
+
+    /* 포커스 링 — 키보드 포커스 표시는 선택이 아니라 필수다.
+       사용: outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); */
+    --focus-ring-color: var(--primitive-primary-500);
+    --focus-ring-width: 2px;
+    --focus-ring-offset: 2px;
+
+    /* ===== 간격 ===== */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-12: 48px;
+
+    /* ===== radius ===== */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 16px;
+    --radius-full: 9999px;
+
+    /* ===== shadow — 문서 표면 위에 뜬 정도로 고른다. 사용 기준: 30-design-system ===== */
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.05); /* 인풋 포커스, 툴팁, 카드 */
+    --shadow-md: 0 4px 6px rgb(0 0 0 / 0.1); /* 드롭다운, 팝오버, sticky 헤더 */
+    --shadow-lg: -8px 0 24px rgb(0 0 0 / 0.12); /* 모달, 슬라이드 패널 (app.css .drawer) */
+
+    /* ===== 모션 — 상태 전환에 쓴다. 사용 기준: 30-design-system ===== */
+    --duration-fast: 120ms;
+    --duration-base: 200ms;
+    --duration-slow: 320ms;
+    --duration-flash: 1600ms; /* 새로 들어온 행 강조 (app.css @keyframes flash) */
+    --easing-standard: cubic-bezier(0.4, 0, 0.2, 1); /* 일반 상태 전환 */
+    --easing-decelerate: cubic-bezier(0, 0, 0.2, 1); /* 화면에 들어오는 요소(모달 열림 등) */
+    --easing-accelerate: cubic-bezier(0.4, 0, 1, 1); /* 화면에서 나가는 요소(모달 닫힘 등) */
+
+    /* ===== 타이포 (app.css body 13px/1.45) ===== */
+    --font-family-base: -apple-system, blinkmacsystemfont, 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    --font-family-mono: ui-monospace, sfmono-regular, menlo, consolas, monospace;
+    --font-size-xs: 11px;
+    --font-size-sm: 12px;
+    --font-size-base: 13px;
+    --font-size-md: 14px;
+    --font-size-lg: 16px;
+    --font-size-xl: 20px;
+    --font-size-2xl: 26px;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --line-height-base: 1.45;
+    --line-height-tight: 1.3;
+
+    color-scheme: light;
+}
+
+/* 다크 모드 — semantic 별칭만 다크 primitive 로 돌린다 (app.css prefers-color-scheme: dark 의 색) */
+:root[data-theme='dark'] {
+    --color-primary: var(--primitive-primary-400);
+    --color-primary-hover: var(--primitive-primary-300);
+    --color-primary-pressed: var(--primitive-primary-200);
+    --color-primary-subtle: var(--primitive-info-night-100);
+    --color-primary-subtle-hover: var(--primitive-night-300);
+    --color-primary-strong: var(--primitive-primary-400);
+    --color-on-primary: var(--primitive-gray-0);
+    --color-secondary: var(--primitive-night-600);
+    --color-secondary-hover: var(--primitive-night-900);
+
+    --color-background: var(--primitive-night-50);
+    --color-surface: var(--primitive-night-100);
+    --color-surface-muted: var(--primitive-night-200);
+    --color-surface-hover: var(--primitive-night-200);
+    --color-surface-selected: var(--primitive-info-night-100);
+    --color-surface-danger: var(--primitive-danger-night-50);
+    --color-border: var(--primitive-night-300);
+    --color-border-strong: var(--primitive-night-400);
+    --color-overlay: var(--primitive-black-alpha-50);
+
+    --color-text: var(--primitive-night-900);
+    --color-text-muted: var(--primitive-night-600);
+    --color-text-disabled: var(--primitive-night-400);
+    --color-text-inverse: var(--primitive-night-50);
+
+    --color-success-subtle: var(--primitive-success-night-100);
+    --color-success: var(--primitive-success-night-500);
+    --color-success-strong: var(--primitive-success-night-500);
+    --color-warning-subtle: var(--primitive-warning-night-100);
+    --color-warning: var(--primitive-warning-night-500);
+    --color-warning-strong: var(--primitive-warning-night-500);
+    --color-danger-subtle: var(--primitive-danger-night-100);
+    --color-danger: var(--primitive-danger-night-500);
+    --color-danger-strong: var(--primitive-danger-night-500);
+    --color-info-subtle: var(--primitive-info-night-100);
+    --color-info: var(--primitive-info-night-500);
+    --color-info-strong: var(--primitive-info-night-500);
+
+    --focus-ring-color: var(--primitive-primary-400);
+
+    color-scheme: dark;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}

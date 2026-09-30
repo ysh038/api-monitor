@@ -1,0 +1,26 @@
+.code {
+    max-height: 60vh;
+    margin: 0;
+    overflow: auto;
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-muted);
+    color: var(--color-text);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    line-height: 1.55;
+}
+
+.code:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+}
+
+.wrap {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.nowrap {
+    white-space: pre;
+}

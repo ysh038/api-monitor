@@ -1,0 +1,80 @@
+.group {
+    position: relative;
+    display: inline-flex;
+    flex: none;
+    gap: 2px;
+    padding: 3px;
+    border-radius: var(--radius-md);
+    background: var(--color-surface-muted);
+}
+
+/* 선택 표시 — 선택한 버튼 아래에 깔리고, 고를 때 새 자리로 미끄러져 간다 (dashboard-stable-layout M1~M3) */
+.indicator {
+    position: absolute;
+    top: 3px;
+    bottom: 3px;
+    left: 0;
+    width: var(--indicator-width);
+    border-radius: calc(var(--radius-md) - 2px);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+    transform: translateX(var(--indicator-x));
+    pointer-events: none;
+}
+
+.isAnimated {
+    transition:
+        transform var(--duration-base) var(--easing-standard),
+        width var(--duration-base) var(--easing-standard);
+}
+
+.option {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-1) var(--space-3);
+    border: 0;
+    border-radius: calc(var(--radius-md) - 2px);
+    background: transparent;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-md);
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+        background-color var(--duration-fast) var(--easing-standard),
+        color var(--duration-base) var(--easing-standard);
+}
+
+/* 굵은 글자 폭을 미리 잡아 둔다 — 선택되어 굵어져도 버튼 폭이 그대로다 (L6) */
+.option::after {
+    content: attr(data-label);
+    height: 0;
+    overflow: hidden;
+    font-weight: var(--font-weight-semibold);
+    visibility: hidden;
+    user-select: none;
+}
+
+.option:hover {
+    color: var(--color-text);
+}
+
+.option:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: 0;
+}
+
+.option[aria-pressed='true'] {
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-weight: var(--font-weight-semibold);
+    box-shadow: var(--shadow-sm);
+}
+
+/* 선택 표시가 있으면 버튼 자체 배경은 비워 둔다 (선택 표시가 대신 그린다) */
+.group[data-has-indicator='true'] .option[aria-pressed='true'] {
+    background: transparent;
+    box-shadow: none;
+}

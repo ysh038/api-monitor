@@ -1,3 +1,4 @@
+const fs = require('node:fs');
 const path = require('node:path');
 const express = require('express');
 const config = require('./config');
@@ -27,10 +28,16 @@ app.disable('x-powered-by');
 app.use(ingestRouter(queue, config));
 app.use(queryRouter(db, queue, config));
 if (config.dev) app.use(devRouter(db)); // npm run dev 일 때만 Mock 데이터 API
-app.use(express.static(path.join(__dirname, '..', 'public')));
+app.use(express.static(config.staticDir));
+// 화면이 빌드되지 않은 상태로 띄웠을 때 안내 (API 는 그대로 동작)
+if (!fs.existsSync(path.join(config.staticDir, 'index.html'))) {
+  app.get('/', (req, res) =>
+    res.status(503).type('text').send(`대시보드 화면이 없습니다: ${config.staticDir}\ndashboard-ui 에서 npm run build 를 실행하세요.`),
+  );
+}
 
 const server = app.listen(config.port, () => {
-  console.log(`[api-monitor] http://0.0.0.0:${config.port}  (db: ${config.dbPath}, retention: ${config.retentionDays}d)${config.dev ? '  [DEV 모드: Mock 데이터 기능 켜짐]' : ''}`);
+  console.log(`[api-monitor] http://0.0.0.0:${config.port}  (db: ${config.dbPath}, retention: ${config.retentionDays}d, ui: ${config.staticDir})${config.dev ? '  [DEV 모드: Mock 데이터 기능 켜짐]' : ''}`);
 });
 
 function shutdown() {
