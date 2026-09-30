@@ -104,6 +104,16 @@ cause 체인, 스택트레이스, 연관 목록, 요청/응답 탭, MOCK 태그 
 
 - [x] F1 (U): 원인 문장 — 실패한 자식이 있는 실패 요청은 `{host} 호출이 실패해서 이 요청도 실패했어요`, 응답 없는 외부 호출은 `{host}에서 응답을 받지 못했어요`, 5xx 외부 호출은 `{host}에서 {code} 오류가 났어요`, 예외 있는 5xx 는 `서버 안에서 {Class} 예외가 났어요`, 예외 있는 4xx 는 `앱이 {Class} 예외를 {code} 응답으로 처리했어요`, 예외 없는 4xx 는 `{code} 응답으로 요청을 거부했어요`, 예외 없는 5xx 는 `서버가 {code} 오류를 돌려줬어요`, 정상은 `정상 처리했어요`.
 - [x] F2 (U): (호스트 뒤 조사 오류를 피하려고 `{host} 서버가` 로 쓴다) 확인 가이드 — 타임아웃 계열 예외(`SocketTimeoutException`, 메시지에 `timed out`)면 `{host} 서버가 정상적으로 떠 있는지` + `읽기 타임아웃 {걸린 시간}가 충분한지`, 연결 실패(`ConnectException`, `Connection refused`)면 대상 주소·포트, 401/403 은 인증 정보, 404 는 경로, 검증 예외(`MethodArgumentNotValidException`, 400)는 요청 값, `DataIntegrityViolationException` 은 제약 조건, 외부 5xx 는 대상 서버 로그. 해당 없으면 빈 목록(섹션 숨김).
+- [x] F2a (U): 확인 가이드 규칙 추가 (2026-09-30). 예외 클래스로 알 수 있는 경우를 상태 코드 규칙보다 먼저 본다.
+  - DB 커넥션 부족(`CannotGetJdbcConnectionException`, `SQLTransientConnectionException`, 메시지 `Connection is not available`) → 커넥션 풀 크기·오래 걸리는 쿼리 (타임아웃 규칙보다 먼저)
+  - SSL(`SSLHandshakeException`, `SSLException`, `CertPathValidatorException`) → `{host} 서버 인증서`
+  - 동시 수정 충돌(`OptimisticLockException`, `ObjectOptimisticLockingFailureException`, 409) → 같은 데이터를 동시에 고친 요청
+  - `NullPointerException` → 스택트레이스의 강조된 앱 코드 줄에서 비어 있을 수 있는 값
+  - 데이터 없음(`EntityNotFoundException`, `NoSuchElementException`, `EmptyResultDataAccessException`) → 찾는 데이터(id)가 실제로 있는지
+  - `OutOfMemoryError`, `StackOverflowError` → 메모리 사용량·끝없는 재귀
+  - JSON 읽기 실패(`HttpMessageNotReadableException`) → 요청 바디 JSON 형식·필드 타입 (검증 실패 규칙에서 분리)
+  - `AccessDeniedException` → 인증·권한 규칙과 같은 문장 (상태가 500 이어도)
+  - 405·`HttpRequestMethodNotSupportedException` → HTTP 메서드, 415·`HttpMediaTypeNotSupportedException` → `Content-Type`, 413·`MaxUploadSizeExceededException` → 업로드 크기 제한, 429 → 호출 횟수 제한(보낸 요청이면 `{host}`의 제한)
 - [x] F3 (U): 스택트레이스는 12줄 미리보기, 프레임워크 패키지(`java.`, `org.springframework.` 등 기존 목록)가 아닌 `at ` 줄을 앱 코드로 표시한다.
 - [x] F4 (U): 바디가 JSON 이면 들여쓰기 2칸으로 보기 좋게, 잘린 JSON·일반 문자열은 원문, 빈 값은 없음.
 - [x] F5 (U): 호출 흐름 — 부모 막대는 0~부모 소요, 자식 막대는 `created_at` 차이만큼 떨어진 위치와 자기 소요 길이(부모 범위로 잘라냄), 눈금은 0 · 절반 · 끝.

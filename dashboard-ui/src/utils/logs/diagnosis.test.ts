@@ -144,3 +144,94 @@ describe('결과 박스 (F7)', () => {
         expect(getResultBox(row)).toEqual(expected)
     })
 })
+
+describe('확인 가이드 추가 규칙 (F2a)', () => {
+    const hints = (overrides: Parameters<typeof makeRow>[0]) => diagnose(makeRow(overrides), []).hints
+    const DB_POOL = 'DB 커넥션 풀이 모자라지 않은지(최대 커넥션 수, 오래 걸리는 쿼리) 확인해 보세요'
+
+    it.each([
+        ['org.springframework.jdbc.CannotGetJdbcConnectionException', 'Failed to obtain JDBC Connection'],
+        ['java.sql.SQLTransientConnectionException', 'HikariPool-1 - Connection is not available, request timed out after 30000ms'],
+    ])('DB 커넥션 부족: %s (메시지에 timed out 이 있어도 타임아웃 규칙보다 먼저)', (exceptionClass, exceptionMessage) => {
+        expect(hints({ statusCode: 500, exceptionClass, exceptionMessage })).toEqual([DB_POOL])
+    })
+
+    it('SSL 인증서', () => {
+        const call = makeOutbound(null, {
+            targetHost: 'pg:9443',
+            statusCode: null,
+            exceptionClass: 'javax.net.ssl.SSLHandshakeException',
+            exceptionMessage: 'PKIX path building failed',
+        })
+        expect(diagnose(call, []).hints).toEqual([
+            'pg:9443 서버 인증서가 유효한지, 우리 서버가 신뢰하는 인증서인지 확인해 보세요',
+        ])
+    })
+
+    it.each([
+        [{ statusCode: 500, exceptionClass: 'org.springframework.orm.ObjectOptimisticLockingFailureException' }],
+        [{ statusCode: 409 }],
+    ])('동시 수정 충돌 %#', (overrides) => {
+        expect(hints(overrides)).toEqual(['같은 데이터를 동시에 고친 다른 요청이 없는지 확인해 보세요'])
+    })
+
+    it('NullPointerException', () => {
+        expect(hints({ statusCode: 500, exceptionClass: 'java.lang.NullPointerException' })).toEqual([
+            '스택트레이스에서 강조된 앱 코드 줄을 보고, 비어 있을 수 있는 값을 확인해 보세요',
+        ])
+    })
+
+    it.each([
+        'jakarta.persistence.EntityNotFoundException',
+        'java.util.NoSuchElementException',
+        'org.springframework.dao.EmptyResultDataAccessException',
+    ])('데이터 없음: %s (404 로 처리돼도 경로 규칙보다 먼저)', (exceptionClass) => {
+        expect(hints({ statusCode: 404, exceptionClass })).toEqual([
+            '찾으려는 데이터가 실제로 있는지(id 값) 확인해 보세요',
+        ])
+    })
+
+    it.each(['java.lang.OutOfMemoryError', 'java.lang.StackOverflowError'])('%s', (exceptionClass) => {
+        expect(hints({ statusCode: 500, exceptionClass })).toEqual([
+            '메모리 사용량이나 끝없이 도는 재귀 호출이 없는지 확인해 보세요',
+        ])
+    })
+
+    it('JSON 읽기 실패는 검증 실패와 다른 문장', () => {
+        expect(
+            hints({
+                statusCode: 400,
+                exceptionClass: 'org.springframework.http.converter.HttpMessageNotReadableException',
+            }),
+        ).toEqual(['요청 바디가 올바른 JSON 형식인지, 필드 타입이 맞는지 확인해 보세요'])
+    })
+
+    it('AccessDeniedException 은 500 이어도 권한 문장', () => {
+        expect(
+            hints({ statusCode: 500, exceptionClass: 'org.springframework.security.access.AccessDeniedException' }),
+        ).toEqual(['인증 토큰이나 권한 설정이 맞는지 확인해 보세요'])
+    })
+
+    it.each([
+        [{ statusCode: 405 }, '이 경로가 받는 HTTP 메서드(GET, POST 등)가 맞는지 확인해 보세요'],
+        [
+            { statusCode: 500, exceptionClass: 'org.springframework.web.HttpRequestMethodNotSupportedException' },
+            '이 경로가 받는 HTTP 메서드(GET, POST 등)가 맞는지 확인해 보세요',
+        ],
+        [{ statusCode: 415 }, '요청의 Content-Type 헤더가 이 API가 받는 형식인지 확인해 보세요'],
+        [
+            { statusCode: 413, exceptionClass: 'org.springframework.web.multipart.MaxUploadSizeExceededException' },
+            '업로드 크기 제한(max-file-size 등)을 넘지 않았는지 확인해 보세요',
+        ],
+        [{ statusCode: 429 }, '호출 횟수 제한(rate limit)에 걸리지 않았는지 확인해 보세요'],
+    ])('상태 코드 %#', (overrides, hint) => {
+        expect(hints(overrides)).toEqual([hint])
+    })
+
+    it('보낸 요청의 429 는 대상 서버의 제한', () => {
+        const call = makeOutbound(null, { targetHost: 'api.partner.com', statusCode: 429 })
+        expect(diagnose(call, []).hints).toEqual([
+            'api.partner.com 서버의 호출 횟수 제한(rate limit)에 걸리지 않았는지 확인해 보세요',
+        ])
+    })
+})

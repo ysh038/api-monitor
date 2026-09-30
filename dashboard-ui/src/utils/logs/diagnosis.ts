@@ -10,13 +10,6 @@ export interface IDiagnosis {
     hints: string[]
 }
 
-const TIMEOUT_CLASS = /(SocketTimeout|Timeout)Exception$/
-const TIMEOUT_MESSAGE = /timed? ?out/i
-const CONNECT_CLASS = /(Connect|UnknownHost|NoRouteToHost)Exception$/
-const CONNECT_MESSAGE = /connection refused/i
-const VALIDATION_CLASS = /(MethodArgumentNotValid|ConstraintViolation|BindException|HttpMessageNotReadable)/
-const DATA_INTEGRITY_CLASS = /DataIntegrityViolationException$/
-
 function headlineOf(row: ILogRow): string {
     const host = row.targetHost ?? ''
     const code = row.statusCode
@@ -35,37 +28,130 @@ function headlineOf(row: ILogRow): string {
     return '정상 처리했어요'
 }
 
-function hintsOf(row: ILogRow): string[] {
-    const host = row.targetHost
-    const exceptionClass = row.exceptionClass ?? ''
-    const message = row.exceptionMessage ?? ''
-    const code = row.statusCode
+interface IHintRule {
+    matches: (row: ILogRow) => boolean
+    hints: (row: ILogRow) => string[]
+}
 
-    if (TIMEOUT_CLASS.test(exceptionClass) || TIMEOUT_MESSAGE.test(message)) {
-        const hints = [
-            `읽기 타임아웃 ${formatDuration(row.durationMs)}가 이 호출에 충분한지 확인해 보세요`,
-        ]
-        return host ? [`${host} 서버가 정상적으로 떠 있는지 확인해 보세요`, ...hints] : hints
-    }
-    if (CONNECT_CLASS.test(exceptionClass) || CONNECT_MESSAGE.test(message)) {
-        return [
-            `${host ?? '대상'} 서버가 떠 있는지, 주소와 포트가 맞는지 확인해 보세요`,
-        ]
-    }
-    if (row.kind === 'OUTBOUND' && code !== null && code >= 500) {
-        return [`${host} 서버 로그에서 같은 시각의 오류를 확인해 보세요`]
-    }
-    if (DATA_INTEGRITY_CLASS.test(exceptionClass)) {
-        return ['중복 키나 NOT NULL 같은 DB 제약 조건에 걸리지 않았는지 확인해 보세요']
-    }
-    if (code === 401 || code === 403) {
-        return ['인증 토큰이나 권한 설정이 맞는지 확인해 보세요']
-    }
-    if (code === 404) return ['요청 경로와 HTTP 메서드가 맞는지 확인해 보세요']
-    if (code === 400 || VALIDATION_CLASS.test(exceptionClass)) {
-        return ['요청 바디와 파라미터 값이 검증 조건에 맞는지 확인해 보세요']
-    }
-    return []
+const classIs = (pattern: RegExp) => (row: ILogRow) => pattern.test(row.exceptionClass ?? '')
+const messageIs = (pattern: RegExp) => (row: ILogRow) => pattern.test(row.exceptionMessage ?? '')
+const statusIs =
+    (...codes: number[]) =>
+    (row: ILogRow) =>
+        row.statusCode !== null && codes.includes(row.statusCode)
+const anyOf =
+    (...checks: ((row: ILogRow) => boolean)[]) =>
+    (row: ILogRow) =>
+        checks.some((check) => check(row))
+const isOutbound = (row: ILogRow) => row.kind === 'OUTBOUND'
+const hostOf = (row: ILogRow) => row.targetHost ?? '대상'
+
+const AUTH_HINT = '인증 토큰이나 권한 설정이 맞는지 확인해 보세요'
+
+/**
+ * 확인 가이드 규칙표 — 위에서부터 처음 맞는 규칙 하나만 쓴다 (spec F2·F2a).
+ * 예외 클래스로 원인을 알 수 있는 규칙을 상태 코드 규칙보다 앞에 둔다.
+ * 순서가 뜻을 가진다: 예) Hikari 풀 고갈 메시지에도 "timed out" 이 있어서 DB 규칙이 타임아웃보다 먼저다.
+ */
+const HINT_RULES: IHintRule[] = [
+    {
+        matches: anyOf(
+            classIs(/(CannotGetJdbcConnection|SQLTransientConnection|JDBCConnection)Exception$/),
+            messageIs(/Connection is not available/i),
+        ),
+        hints: () => ['DB 커넥션 풀이 모자라지 않은지(최대 커넥션 수, 오래 걸리는 쿼리) 확인해 보세요'],
+    },
+    {
+        matches: classIs(/(OutOfMemoryError|StackOverflowError)$/),
+        hints: () => ['메모리 사용량이나 끝없이 도는 재귀 호출이 없는지 확인해 보세요'],
+    },
+    {
+        matches: classIs(/(SSLHandshakeException|SSLException|CertPathValidatorException)$/),
+        hints: (row) => [
+            `${hostOf(row)} 서버 인증서가 유효한지, 우리 서버가 신뢰하는 인증서인지 확인해 보세요`,
+        ],
+    },
+    {
+        matches: anyOf(classIs(/(SocketTimeout|Timeout)Exception$/), messageIs(/timed? ?out/i)),
+        hints: (row) => {
+            const timeout = `읽기 타임아웃 ${formatDuration(row.durationMs)}가 이 호출에 충분한지 확인해 보세요`
+            return row.targetHost
+                ? [`${row.targetHost} 서버가 정상적으로 떠 있는지 확인해 보세요`, timeout]
+                : [timeout]
+        },
+    },
+    {
+        matches: anyOf(
+            classIs(/(Connect|UnknownHost|NoRouteToHost)Exception$/),
+            messageIs(/connection refused/i),
+        ),
+        hints: (row) => [`${hostOf(row)} 서버가 떠 있는지, 주소와 포트가 맞는지 확인해 보세요`],
+    },
+    {
+        matches: (row) => isOutbound(row) && statusIs(429)(row),
+        hints: (row) => [
+            `${hostOf(row)} 서버의 호출 횟수 제한(rate limit)에 걸리지 않았는지 확인해 보세요`,
+        ],
+    },
+    {
+        matches: (row) => isOutbound(row) && row.statusCode !== null && row.statusCode >= 500,
+        hints: (row) => [`${row.targetHost} 서버 로그에서 같은 시각의 오류를 확인해 보세요`],
+    },
+    {
+        matches: classIs(/DataIntegrityViolationException$/),
+        hints: () => ['중복 키나 NOT NULL 같은 DB 제약 조건에 걸리지 않았는지 확인해 보세요'],
+    },
+    {
+        matches: anyOf(classIs(/OptimisticLock(ing)?(Failure)?Exception$/), statusIs(409)),
+        hints: () => ['같은 데이터를 동시에 고친 다른 요청이 없는지 확인해 보세요'],
+    },
+    {
+        matches: classIs(/NullPointerException$/),
+        hints: () => ['스택트레이스에서 강조된 앱 코드 줄을 보고, 비어 있을 수 있는 값을 확인해 보세요'],
+    },
+    {
+        matches: classIs(/(EntityNotFound|NoSuchElement|EmptyResultDataAccess)Exception$/),
+        hints: () => ['찾으려는 데이터가 실제로 있는지(id 값) 확인해 보세요'],
+    },
+    {
+        matches: classIs(/HttpMessageNotReadableException$/),
+        hints: () => ['요청 바디가 올바른 JSON 형식인지, 필드 타입이 맞는지 확인해 보세요'],
+    },
+    {
+        matches: anyOf(classIs(/AccessDeniedException$/), statusIs(401, 403)),
+        hints: () => [AUTH_HINT],
+    },
+    {
+        matches: anyOf(classIs(/HttpRequestMethodNotSupportedException$/), statusIs(405)),
+        hints: () => ['이 경로가 받는 HTTP 메서드(GET, POST 등)가 맞는지 확인해 보세요'],
+    },
+    {
+        matches: anyOf(classIs(/HttpMediaTypeNotSupportedException$/), statusIs(415)),
+        hints: () => ['요청의 Content-Type 헤더가 이 API가 받는 형식인지 확인해 보세요'],
+    },
+    {
+        matches: anyOf(classIs(/MaxUploadSizeExceededException$/), statusIs(413)),
+        hints: () => ['업로드 크기 제한(max-file-size 등)을 넘지 않았는지 확인해 보세요'],
+    },
+    {
+        matches: statusIs(429),
+        hints: () => ['호출 횟수 제한(rate limit)에 걸리지 않았는지 확인해 보세요'],
+    },
+    {
+        matches: statusIs(404),
+        hints: () => ['요청 경로와 HTTP 메서드가 맞는지 확인해 보세요'],
+    },
+    {
+        matches: anyOf(
+            classIs(/(MethodArgumentNotValid|ConstraintViolation|BindException)/),
+            statusIs(400),
+        ),
+        hints: () => ['요청 바디와 파라미터 값이 검증 조건에 맞는지 확인해 보세요'],
+    },
+]
+
+function hintsOf(row: ILogRow): string[] {
+    return HINT_RULES.find((rule) => rule.matches(row))?.hints(row) ?? []
 }
 
 /**
