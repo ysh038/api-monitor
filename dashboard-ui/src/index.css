@@ -30,3 +30,13 @@ select {
 html {
     scrollbar-gutter: stable;
 }
+
+/* 스크롤바 — 얇게, 트랙 배경 없이. 손잡이는 테두리 토큰이라 다크 모드를 따른다 (react-migration H5) */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border-strong) transparent;
+}
+
+*:hover {
+    scrollbar-color: var(--color-secondary) transparent;
+}

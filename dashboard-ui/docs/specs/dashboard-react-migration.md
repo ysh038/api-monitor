@@ -146,6 +146,7 @@ cause 체인, 스택트레이스, 연관 목록, 요청/응답 탭, MOCK 태그 
 - [x] H2 (확인): 다크 모드는 `prefers-color-scheme` 로 기존 app.css 다크 팔레트를 쓴다 (토큰 레벨).
 - [x] H3 (확인): 760px 이하 서비스·예외 컬럼 숨김, 1180px 이하 예외는 `예외` 로 축약.
 - [x] H4 (확인): `npm run lint`, `npm run build`, `node .harness/gates/run-checks.mjs` 통과.
+- [x] H5 (S): 스크롤바는 얇고(`scrollbar-width: thin`) 트랙 배경이 없다(투명). 손잡이는 테두리 토큰 색이고 마우스를 올리면 진해진다. 페이지·표·상세 패널·코드 블록 등 앱의 모든 스크롤 영역에 같게 적용한다 (2026-10-01).
 
 ## 영향 범위
 

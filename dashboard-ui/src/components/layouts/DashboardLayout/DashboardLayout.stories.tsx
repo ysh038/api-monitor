@@ -35,3 +35,19 @@ export const StableScrollbarGutter: TStory = {
         await expect(getComputedStyle(document.documentElement).scrollbarGutter).toBe('stable')
     },
 }
+
+/** H5: 스크롤바는 얇고 트랙 배경이 없다 — 페이지와 안쪽 스크롤 영역 모두 */
+export const ThinScrollbars: TStory = {
+    play: async ({ canvasElement }) => {
+        const inner = document.createElement('div')
+        inner.style.overflow = 'auto'
+        canvasElement.appendChild(inner)
+        for (const el of [document.documentElement, inner]) {
+            const style = getComputedStyle(el)
+            await expect(style.scrollbarWidth).toBe('thin')
+            // "손잡이색 트랙색" — 트랙은 투명
+            await expect(style.scrollbarColor).toMatch(/ (transparent|rgba\(0, 0, 0, 0\))$/)
+        }
+        inner.remove()
+    },
+}
