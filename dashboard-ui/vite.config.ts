@@ -51,6 +51,8 @@ export default defineConfig({
                         enabled: true,
                         headless: true,
                         provider: playwright({}),
+                        // 데스크톱 폭에서 검증한다 (기본 414px 면 760px 이하 전용 레이아웃이 걸린다)
+                        viewport: { width: 1280, height: 800 },
                         instances: [{ browser: 'chromium' }],
                     },
                 },

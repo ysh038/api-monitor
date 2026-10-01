@@ -41,7 +41,7 @@ export interface ICallFlowProps {
 function CallFlow({ root, calls, currentId, onNavigate }: ICallFlowProps) {
     const flow = useMemo(() => buildCallFlow(root, calls), [root, calls])
     return (
-        <>
+        <div className={styles.flowBlock}>
             <SectionHeader
                 title="호출 흐름"
                 level={3}
@@ -60,7 +60,7 @@ function CallFlow({ root, calls, currentId, onNavigate }: ICallFlowProps) {
                                 <span className={styles.laneTitle}>{lane.title}</span>
                                 <span className={styles.laneSubtitle}>{lane.subtitle}</span>
                             </span>
-                            <span className={styles.laneTrack} aria-hidden="true">
+                            <span className={styles.laneTrack} aria-hidden="true" data-lane-track>
                                 {lane.segments.map((segment) => (
                                     <span
                                         key={`${segment.kind}-${segment.start}`}
@@ -109,7 +109,7 @@ function CallFlow({ root, calls, currentId, onNavigate }: ICallFlowProps) {
                     ))}
                 </ul>
             ) : null}
-        </>
+        </div>
     )
 }
 

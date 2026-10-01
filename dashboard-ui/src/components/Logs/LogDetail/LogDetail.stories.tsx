@@ -201,3 +201,25 @@ export const NoOutboundCalls: TStory = {
         await expect(canvas.getByText('보낸 요청 없이 내 서버가 3.0초 동안 직접 처리했어요')).toBeVisible()
     },
 }
+
+/** R7: 최소 폭(400px) 패널 안에서도 가로로 넘치지 않고 호출 흐름 막대 칸이 보인다 */
+export const NarrowPanel: TStory = {
+    decorators: [
+        (Story) => (
+            <div style={{ width: 400, containerType: 'inline-size' }} data-testid="panel">
+                <Story />
+            </div>
+        ),
+    ],
+    play: async ({ canvas, canvasElement }) => {
+        const panel = canvas.getByTestId('panel')
+        const detail = panel.firstElementChild
+        if (!(detail instanceof HTMLElement)) throw new Error('상세 없음')
+        await expect(detail.scrollWidth).toBeLessThanOrEqual(detail.clientWidth + 1)
+        const tracks = canvasElement.querySelectorAll('[data-lane-track]')
+        await expect(tracks.length).toBeGreaterThan(0)
+        for (const track of tracks) {
+            await expect(track.getBoundingClientRect().width).toBeGreaterThan(80)
+        }
+    },
+}
