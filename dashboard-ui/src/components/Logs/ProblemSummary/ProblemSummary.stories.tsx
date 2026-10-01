@@ -108,3 +108,22 @@ export const LatestHundredOnly: TStory = {
         await expect(canvas.getByText('최근 요청에서 문제가 없어요')).toBeVisible()
     },
 }
+
+const SEC = 1000
+const authRows = [
+    makeRow({ method: 'GET', path: '/api/v1/orders/3', statusCode: 200, createdAt: BASE_TIME + 2 * SEC }),
+    makeRow({ method: 'GET', path: '/api/v1/orders/3', statusCode: 401, createdAt: BASE_TIME }),
+    makeRow({ method: 'GET', path: '/api/v1/admin', statusCode: 401, clientIp: '10.0.0.9', createdAt: BASE_TIME - 10 * SEC }),
+]
+
+/** A3·A4: 재시도로 회복된 401 은 문제로 세지 않고, 뺀 건수를 기준 안내에 밝힌다 */
+export const RecoveredAuth: TStory = {
+    args: { rows: authRows },
+    play: async ({ canvas }) => {
+        await expect(canvas.getByText('최근 3건 기준 · 재시도로 회복된 401 1건 제외')).toBeVisible()
+        const problems = within(canvas.getByRole('region', { name: '반복되는 문제' }))
+        const items = problems.getAllByRole('button')
+        await expect(items).toHaveLength(1)
+        await expect(items[0]).toHaveTextContent('GET /api/v1/admin')
+    },
+}

@@ -57,7 +57,8 @@ export function normalizePath(path: string): string {
 }
 
 const isProblemRow = (row: ILogRow) => isFailure(row) || isRejected(row)
-const routeOf = (row: ILogRow) => row.route ?? normalizePath(row.path)
+/** 묶는 경로 — route 가 있으면 그 값, 없으면 ID 조각을 {id} 로 바꾼 경로 */
+export const routeOf = (row: ILogRow) => row.route ?? normalizePath(row.path)
 /** 백엔드 로그 표준의 집계 기준과 같은 우선순위: errorCode → rootCauseType → 예외 클래스 */
 const causeOf = (row: ILogRow) => row.errorCode ?? row.rootCauseType ?? row.exceptionClass ?? ''
 const isNewer = (a: ILogRow, b: ILogRow) =>

@@ -9,7 +9,7 @@ import {
     isFailure,
     isSuccessRow,
 } from '../../../utils/logs/status'
-import { ExceptionTag, LogPath, StatusText } from '../LogParts'
+import { ExceptionTag, LogPath, RecoveredTag, StatusText } from '../LogParts'
 
 import styles from './LogTable.module.css'
 
@@ -24,6 +24,8 @@ export interface ILogTableRowProps {
     isChildCountShown: boolean
     isSelected: boolean
     isNew: boolean
+    /** 재시도로 회복된 401 — 토큰 만료 후 재발급 같은 정상 흐름 (dashboard-recovered-401 A5) */
+    isRecovered?: boolean
     /** 펼친 정상 요청 묶음 안의 행 (왼쪽 세로선) */
     isInGroup?: boolean
     /**
@@ -41,6 +43,7 @@ function LogTableRow({
     isChildCountShown,
     isSelected,
     isNew,
+    isRecovered = false,
     isInGroup = false,
     collapse,
     onSelect,
@@ -113,7 +116,14 @@ function LogTableRow({
                     </>,
                 )}
             </td>
-            <td className={styles.hideNarrow}>{cell(<ExceptionTag row={row} isCollapsible />)}</td>
+            <td className={styles.hideNarrow}>
+                {cell(
+                    <>
+                        <ExceptionTag row={row} isCollapsible />
+                        {isRecovered ? <RecoveredTag /> : null}
+                    </>,
+                )}
+            </td>
         </tr>
     )
 }

@@ -31,6 +31,27 @@ export function MockTag() {
     )
 }
 
+const RECOVERED_TITLE =
+    '같은 사용자(IP)가 30초 안에 같은 요청을 다시 보내 성공했어요. 토큰 만료 후 재발급 같은 정상 흐름일 가능성이 높아요.'
+
+/** 재시도로 회복된 401 표시 (dashboard-recovered-401 A5). 좁은 화면에서는 "재시도" 로 줄인다 */
+export function RecoveredTag() {
+    return (
+        <span className={styles.isCollapsible} title={RECOVERED_TITLE}>
+            <span className={styles.exceptionLong}>
+                <Badge appearance="outline" tone="neutral" size="sm">
+                    재시도 성공
+                </Badge>
+            </span>
+            <span className={styles.exceptionShort}>
+                <Badge appearance="outline" tone="neutral" size="sm">
+                    재시도
+                </Badge>
+            </span>
+        </span>
+    )
+}
+
 /** 예외 이름. isCollapsible 이면 좁은 화면에서 "예외" 로 줄인다 */
 export function ExceptionTag({ row, isCollapsible = false }: { row: ILogRow; isCollapsible?: boolean }) {
     if (!row.exceptionClass) return null

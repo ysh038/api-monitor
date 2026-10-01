@@ -3,7 +3,7 @@ import { expect } from 'storybook/test'
 
 import { makeOutbound, makeRow } from '../../../mocks/logFixtures'
 
-import { ExceptionTag, LogPath, MockTag, StatusText } from './LogParts'
+import { ExceptionTag, LogPath, MockTag, RecoveredTag, StatusText } from './LogParts'
 
 const meta = {
     title: 'Logs/LogParts',
@@ -77,10 +77,12 @@ export const Parts: TStory = {
             <MockTag />
             <ExceptionTag row={makeRow({ statusCode: 400, exceptionClass: 'a.b.MethodArgumentNotValidException' })} />
             <ExceptionTag row={makeRow({ statusCode: 500, exceptionClass: 'a.b.DataIntegrityViolationException', exceptionMessage: 'dup' })} />
+            <RecoveredTag />
         </>
     ),
     play: async ({ canvas }) => {
         await expect(canvas.getByText('응답 없음')).toBeVisible()
+        await expect(canvas.getByText('재시도 성공')).toBeVisible()
         await expect(canvas.getByText('DataIntegrityViolationException')).toHaveAttribute(
             'title',
             'a.b.DataIntegrityViolationException: dup',

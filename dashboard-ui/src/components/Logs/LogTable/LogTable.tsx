@@ -5,6 +5,7 @@ import Button from '../../../design-system/atoms/Button'
 import EmptyState from '../../../design-system/atoms/EmptyState'
 import type { ILogRow } from '../../../types/log'
 import { buildListItems, buildLogTree, type ILogNode } from '../../../utils/logs/listView'
+import { findRecoveredAuth } from '../../../utils/logs/recovery'
 
 import styles from './LogTable.module.css'
 import LogTableRow from './LogTableRow'
@@ -47,6 +48,7 @@ function LogTable({
         () => buildListItems(buildLogTree(rows), { isGroupingSuccess }),
         [rows, isGroupingSuccess],
     )
+    const recoveredIds = useMemo(() => findRecoveredAuth(rows), [rows])
     const groups = useGroupAccordion()
 
     const renderNode = (
@@ -61,6 +63,7 @@ function LogTable({
                 isChildCountShown={children.length === 0}
                 isSelected={row.id === selectedId}
                 isNew={newIds.has(row.id)}
+                isRecovered={recoveredIds.has(row.id)}
                 isInGroup={isInGroup}
                 collapse={collapse}
                 onSelect={onSelect}

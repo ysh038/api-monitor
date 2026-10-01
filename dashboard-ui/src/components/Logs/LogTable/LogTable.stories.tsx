@@ -268,3 +268,23 @@ export const GroupRowsAlign: TStory = {
         }
     },
 }
+
+/** A5: 재시도로 회복된 401 은 지우지 않고 예외 칸에 `재시도 성공` 을 붙인다 */
+export const RecoveredAuth: TStory = {
+    args: {
+        isGroupingSuccess: false,
+        rows: [
+            makeRow({ path: '/api/v1/orders/3', statusCode: 200, createdAt: 2000 }),
+            makeRow({ path: '/api/v1/orders/3', statusCode: 401, createdAt: 1000 }),
+            makeRow({ path: '/api/v1/admin', statusCode: 401, clientIp: '10.0.0.9', createdAt: 0 }),
+        ],
+    },
+    play: async ({ canvas }) => {
+        const tags = canvas.getAllByText('재시도 성공')
+        await expect(tags).toHaveLength(1)
+        const row = tags[0].closest('tr')
+        await expect(row).toHaveTextContent('401')
+        await expect(row).toHaveTextContent('/api/v1/orders/3')
+        await expect(tags[0].closest('[title]')).toHaveAttribute('title', expect.stringContaining('30초 안에'))
+    },
+}

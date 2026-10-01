@@ -9,6 +9,7 @@ import {
     type IHostHealth,
     problemBasis,
 } from '../../../utils/logs/problems'
+import { findRecoveredAuth } from '../../../utils/logs/recovery'
 
 import styles from './ProblemSummary.module.css'
 
@@ -44,12 +45,20 @@ function ColumnHead({ title, hiddenCount }: { title: string; hiddenCount: number
  */
 function ProblemSummary({ rows, onSelect }: IProblemSummaryProps) {
     const basis = useMemo(() => problemBasis(rows), [rows])
-    const problems = useMemo(() => buildProblems(basis), [basis])
+    // 토큰 만료 → 재발급 → 재시도 같은 정상 흐름의 401 은 문제로 세지 않는다 (dashboard-recovered-401 A3)
+    const recovered = useMemo(() => findRecoveredAuth(basis), [basis])
+    const problems = useMemo(
+        () => buildProblems(basis.filter((row) => !recovered.has(row.id))),
+        [basis, recovered],
+    )
     const hosts = useMemo(() => buildHostHealth(basis), [basis])
 
     return (
         <div className={styles.summary}>
-            <p className={styles.basis}>최근 {formatCount(basis.length)}건 기준</p>
+            <p className={styles.basis}>
+                최근 {formatCount(basis.length)}건 기준
+                {recovered.size > 0 ? ` · 재시도로 회복된 401 ${formatCount(recovered.size)}건 제외` : null}
+            </p>
             <div className={styles.columns}>
                 <section className={styles.column} aria-label="반복되는 문제">
                     <ColumnHead title="반복되는 문제" hiddenCount={problems.length - MAX_ITEMS} />
