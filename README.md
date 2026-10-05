@@ -25,7 +25,7 @@ Spring Boot 앱 (+ starter)
 Gradle:
 ```groovy
 dependencies {
-    implementation 'io.github.ysh038:api-monitor-spring-boot-starter:1.3.0'
+    implementation 'io.github.ysh038:api-monitor-spring-boot-starter:1.4.0'
 }
 ```
 
@@ -34,7 +34,7 @@ Maven:
 <dependency>
     <groupId>io.github.ysh038</groupId>
     <artifactId>api-monitor-spring-boot-starter</artifactId>
-    <version>1.3.0</version>
+    <version>1.4.0</version>
 </dependency>
 ```
 
